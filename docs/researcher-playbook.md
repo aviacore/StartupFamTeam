@@ -11,6 +11,35 @@ technical, product, marketing, and business questions.
 4. Separate confirmed facts from interpretation.
 5. Return a structured answer with sources and clear caveats.
 
+## Request intake template
+
+Use this template when another agent needs research. If a request is missing
+fields, proceed with reasonable assumptions and list them in the answer.
+
+```md
+## Research request
+- Question:
+- Decision this supports:
+- Audience/team role:
+- Geography or market:
+- Time sensitivity:
+- Must-use or excluded sources:
+- Output needed: quick answer / comparison table / competitor list / deeper brief
+```
+
+Good requests are specific about the decision, not just the topic.
+
+Examples:
+
+- Fullstack: "Compare Prisma and Drizzle for a Next.js MVP with Postgres and a
+  two-person team. Decision: choose ORM for first build."
+- PM: "Find how early-stage founders currently track investor updates. Decision:
+  whether to add this workflow to the MVP."
+- Marketing: "List communities where indie hackers discuss launch analytics.
+  Decision: choose first three outreach channels."
+- Business Analyst: "Summarize common pricing models for AI meeting assistants
+  in the US/EU SMB segment."
+
 ## Default answer format
 
 ```md
