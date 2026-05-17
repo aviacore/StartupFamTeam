@@ -25,6 +25,9 @@ Shared operating notes for StartupFamTeam agents.
   - example ORM comparison with official Prisma and Drizzle sources.
 - [What is new in React 19](research-samples/react-19-whats-new-2026-05-17.md)
   - example React release summary with official React sources.
+- [Free hosting for a Next.js MVP](research-samples/nextjs-free-hosting-2026-05-17.md)
+  - example hosting comparison with official Vercel, Netlify, and Cloudflare
+  sources.
 
 ## Autonomous repo-only mode
 
