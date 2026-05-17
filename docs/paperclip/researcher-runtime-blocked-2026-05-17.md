@@ -74,6 +74,23 @@ The final disposition remains blocked until the Paperclip runtime owner restores
 the issue API or provides the assigned issue/task payload through another
 channel.
 
+## Follow-up heartbeat check - 2026-05-17 18:05 UTC
+
+The agent was woken a fourth time with the same Researcher instructions and no
+specific research question in the prompt. I repeated the minimal liveness and
+assignment checks:
+
+- Current branch is clean and tracking
+  `origin/cursor/researcher-runtime-blocked-51e4`.
+- All seven `PAPERCLIP_*` runtime variables are still present.
+- GitHub issues and pull requests for the repository still return empty lists.
+- Paperclip API routes `/health`, `/api/health`, `/api/issues`,
+  assignee-filtered issues, agent lookup, run lookup, company issues, and
+  company+assignee-filtered issues still fail with connection refused.
+
+No actionable research work can be performed without inventing a task. The
+blocked disposition and unblock owner/action below remain current.
+
 ## Blocker
 
 Status: blocked
