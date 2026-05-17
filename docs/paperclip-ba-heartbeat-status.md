@@ -84,6 +84,23 @@ show the blocker has not changed:
   create a comment, interaction, child issue, or final disposition through the
   Paperclip API.
 
+## Follow-up heartbeat check: 2026-05-17 17:54 UTC
+
+The agent was woken again with the same Researcher/BA instructions. Re-checks
+confirm the task channel is still unavailable:
+
+- Current branch is clean and tracking
+  `origin/cursor/paperclip-ba-heartbeat-status-951c`.
+- GitHub issues and pull requests remain empty for this repository.
+- Paperclip endpoints `/api/health`, `/health`,
+  `/api/agents/$PAPERCLIP_AGENT_ID`, `/api/runs/$PAPERCLIP_RUN_ID`, and
+  `/api/issues?assigneeId=$PAPERCLIP_AGENT_ID` still fail with connection
+  refused on localhost port `3100`.
+- Without a reachable assigned issue, the agent cannot determine whether this
+  wake was caused by a human comment, dependency update, approval gate, or
+  concrete BA/research request. The actionable disposition remains blocked on
+  Paperclip runtime/API access.
+
 ## Blocker
 
 Continuation is blocked until the Paperclip runtime API is reachable or an
