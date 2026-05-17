@@ -1,0 +1,41 @@
+# Researcher Run Summary
+
+Date: 2026-05-17
+Agent: startupfam-assistant / Researcher
+
+## Current disposition
+
+Blocked: no concrete research question or assigned issue was provided in the
+heartbeat payload.
+
+Paperclip API access is unavailable in this cloud environment by instruction, so
+this run intentionally did not call Paperclip issue, comment, status, or
+interaction endpoints. GitHub issues for the repository were checked earlier in
+the run and no actionable issue was available.
+
+## Durable status
+
+- The repository is available and can be used for durable work products.
+- The active Researcher role is understood: answer internal team research
+  questions quickly, with factual claims, sources, and explicit uncertainty.
+- No product, technical, market, or business research question has been supplied
+  yet, so no factual research answer can be produced without inventing scope.
+
+## Response format for the next research request
+
+When a concrete question arrives, use this structure:
+
+1. **Short answer** - direct answer in 2-4 bullets.
+2. **Facts and evidence** - sourced findings with links.
+3. **Comparison or options** - if the question asks for a choice.
+4. **Recommendation** - practical conclusion for StartupFamTeam.
+5. **Limits / unknowns** - what could not be verified quickly.
+
+## Input needed to proceed
+
+Provide a specific research question, for example:
+
+- "What is the current Node.js LTS version?"
+- "Compare Prisma and Drizzle for a small Next.js MVP."
+- "Who are the main competitors for an AI startup team orchestration tool?"
+- "What business models are common for AI agent workflow platforms?"
