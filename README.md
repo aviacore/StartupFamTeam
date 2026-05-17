@@ -27,3 +27,4 @@ AI startup team powered by Paperclip + Cursor Cloud.
 ## Research briefs
 
 - [Node.js LTS baseline, May 2026](docs/research-briefs/nodejs-lts-2026-05.md)
+- [Prisma vs Drizzle for Next.js/Postgres, May 2026](docs/research-briefs/prisma-vs-drizzle-nextjs-postgres-2026-05.md)
