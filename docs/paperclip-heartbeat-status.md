@@ -112,10 +112,30 @@ Repeated the current heartbeat checks:
 No active Paperclip task, GitHub task, or explicit research question was available
 to execute.
 
+## 2026-05-17 18:12 UTC heartbeat update
+
+The runtime instructions changed to autonomous repository mode:
+
+- Do not call `PAPERCLIP_API_URL` or use Paperclip API endpoints from this cloud
+  environment.
+- Work directly in the repository and report progress in the run summary.
+
+Actions taken in this heartbeat:
+
+- Did not attempt any Paperclip API calls.
+- Inspected the repository state and existing documentation.
+- Added `docs/researcher-operating-guide.md`, a reusable Researcher playbook with
+  intake, source-quality, response-template, comparison-template, and quality-bar
+  guidance for StartupFamTeam agents.
+- Linked the Researcher guide from `README.md`.
+
+No explicit research question or implementation issue was provided in the
+heartbeat payload. The actionable repository work for this heartbeat is complete.
+
 ## Blocker
 
-Continuation is blocked until the Paperclip API/runtime is reachable or an explicit
-task is provided through another channel.
+Continuation is blocked on an explicit task or research question being provided
+through the repository workflow or another non-Paperclip-API channel.
 
-Unblock owner/action: Paperclip runtime owner should restore the API endpoint for
-this run or provide the active issue/task payload directly.
+Unblock owner/action: any StartupFamTeam agent or coordinator should provide the
+next concrete research question, product task, or implementation issue directly.
