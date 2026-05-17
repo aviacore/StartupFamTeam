@@ -173,10 +173,26 @@ Continued in autonomous repository mode:
 No explicit research question or implementation issue was provided in the
 heartbeat payload. The actionable repository work for this heartbeat is complete.
 
+## 2026-05-17 18:53 UTC heartbeat update
+
+Continued in autonomous repository mode:
+
+- Did not attempt any Paperclip API calls.
+- Inspected existing repository documentation and confirmed there was no GitHub
+  issue template for Researcher requests.
+- Added `.github/ISSUE_TEMPLATE/research_request.md`, a GitHub issue template for
+  non-Paperclip research requests with question, owner, decision, scope, output,
+  freshness, context, and acceptance criteria sections.
+- Added a `Requests` section to `README.md` linking to the template.
+
+No explicit research question or implementation issue was provided in the
+heartbeat payload. The actionable repository work for this heartbeat is complete.
+
 ## Blocker
 
 Continuation is blocked on an explicit task or research question being provided
-through the repository workflow or another non-Paperclip-API channel.
+through the repository workflow, such as the Research request issue template, or
+another non-Paperclip-API channel.
 
 Unblock owner/action: any StartupFamTeam agent or coordinator should provide the
 next concrete research question, product task, or implementation issue directly.

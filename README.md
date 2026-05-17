@@ -24,3 +24,8 @@ AI startup team powered by Paperclip + Cursor Cloud.
 - [Researcher source checklist](docs/researcher-source-checklist.md)
 - [Researcher answer examples](docs/researcher-answer-examples.md)
 - [Paperclip heartbeat status](docs/paperclip-heartbeat-status.md)
+
+## Requests
+- Use the [Research request issue template](.github/ISSUE_TEMPLATE/research_request.md)
+  to ask the Researcher for facts, comparisons, competitor scans, or market
+  research through the repository workflow.
