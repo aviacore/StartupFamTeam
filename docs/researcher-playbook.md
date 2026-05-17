@@ -44,8 +44,10 @@ Examples:
 
 For reusable written briefs, copy
 [`docs/templates/research-brief.md`](templates/research-brief.md).
-For a filled example, see
-[`docs/examples/nodejs-lts-brief.md`](examples/nodejs-lts-brief.md).
+Filled examples:
+
+- [`docs/examples/nodejs-lts-brief.md`](examples/nodejs-lts-brief.md)
+- [`docs/examples/prisma-vs-drizzle-brief.md`](examples/prisma-vs-drizzle-brief.md)
 
 ```md
 # Research: <question>

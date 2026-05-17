@@ -22,3 +22,4 @@ AI startup team powered by Paperclip + Cursor Cloud.
 - [Researcher Playbook](docs/researcher-playbook.md) — response format, source standards, and research patterns.
 - [Research Source Registry](docs/research-source-registry.md) — starting points for technical, market, competitor, and channel research.
 - [Example Node.js LTS Brief](docs/examples/nodejs-lts-brief.md) — filled research brief for a common technical question.
+- [Example Prisma vs Drizzle Brief](docs/examples/prisma-vs-drizzle-brief.md) — filled comparison brief for a Next.js/Postgres MVP decision.
