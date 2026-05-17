@@ -20,4 +20,5 @@ AI startup team powered by Paperclip + Cursor Cloud.
 
 ## Docs
 - [Researcher operating guide](docs/researcher-operating-guide.md)
+- [Researcher request template](docs/researcher-request-template.md)
 - [Paperclip heartbeat status](docs/paperclip-heartbeat-status.md)

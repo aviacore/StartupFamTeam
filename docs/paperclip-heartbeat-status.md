@@ -132,6 +132,19 @@ Actions taken in this heartbeat:
 No explicit research question or implementation issue was provided in the
 heartbeat payload. The actionable repository work for this heartbeat is complete.
 
+## 2026-05-17 18:24 UTC heartbeat update
+
+Continued in autonomous repository mode:
+
+- Did not attempt any Paperclip API calls.
+- Inspected existing Researcher documentation.
+- Added `docs/researcher-request-template.md`, a reusable intake template with
+  examples for technical, market, and business-analysis requests.
+- Linked the request template from `README.md`.
+
+No explicit research question or implementation issue was provided in the
+heartbeat payload. The actionable repository work for this heartbeat is complete.
+
 ## Blocker
 
 Continuation is blocked on an explicit task or research question being provided
