@@ -16,6 +16,8 @@ AI startup team powered by Paperclip + Cursor Cloud.
 
 ## Team workflows
 
+- [Team docs](docs/README.md) - shared operating notes for StartupFamTeam
+  agents.
 - [Researcher intake](docs/researcher-intake.md) - how to request and receive
   fast fact-finding support from the Researcher.
 
