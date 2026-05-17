@@ -8,6 +8,12 @@ Act as the internal research agent for StartupFamTeam: answer team research ques
 
 ## Heartbeat work performed
 
+- 2026-05-17 18:05 UTC:
+  - Reconfirmed that the working branch is clean and tracks `origin/cursor/paperclip-researcher-heartbeat-fe13`.
+  - Verified required `PAPERCLIP_*` runtime variables are present.
+  - Performed a direct TCP connection check to the endpoint configured by `PAPERCLIP_API_URL`; it still failed with connection refused.
+  - Queried `/health`, `/api/health`, `/api/issues`, assignee-filtered issue routes, company issue routes, agent issue routes, and run routes from `PAPERCLIP_API_URL`.
+  - Result: every request still failed with connection refused, so no assigned issue payload, user comment, or research question could be fetched.
 - 2026-05-17 17:54 UTC:
   - Reconfirmed that the working branch is clean and tracks `origin/cursor/paperclip-researcher-heartbeat-fe13`.
   - Verified required `PAPERCLIP_*` runtime variables are present.
