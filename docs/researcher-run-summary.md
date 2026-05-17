@@ -28,6 +28,10 @@ the run and no actionable issue was available.
   assigned issue, or repository task. Paperclip API calls remain out of scope by
   instruction. Current disposition remains blocked on input: a team member or
   orchestrator must provide the research question to answer.
+- 2026-05-17 18:29 UTC: Received a repeated Researcher role heartbeat. No new
+  research prompt, repository task, or actionable issue details were included.
+  The run summary remains the durable progress record, and the next valid action
+  is to answer a specific team research question when one is provided.
 
 ## Response format for the next research request
 
