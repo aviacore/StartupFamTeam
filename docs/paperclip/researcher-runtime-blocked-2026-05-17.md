@@ -146,6 +146,25 @@ Repository-only checks:
 The work item remains blocked until the board/user or another reachable channel
 provides a concrete research question or task payload.
 
+## Follow-up heartbeat check - 2026-05-17 18:51 UTC
+
+The agent was woken an eighth time with the same Autonomous Mode instructions:
+work directly on the repository and do not attempt Paperclip API calls. I did
+not probe `PAPERCLIP_API_URL`.
+
+Repository-only checks:
+
+- Current branch is clean and tracking
+  `origin/cursor/researcher-runtime-blocked-51e4`.
+- GitHub issues and pull requests for the repository still return empty lists.
+- The heartbeat prompt still contains only the general Researcher role
+  instructions, not a concrete research question, target document, or requested
+  deliverable.
+
+No sourced research answer can be produced yet without inventing the question.
+The work item remains blocked on a concrete task payload through a reachable
+channel.
+
 ## Blocker
 
 Status: blocked
