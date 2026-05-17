@@ -23,3 +23,7 @@ AI startup team powered by Paperclip + Cursor Cloud.
 - [Researcher playbook](docs/researcher-playbook.md) — answer format, source rules, and autonomous-mode handling.
 - [Researcher request template](docs/researcher-request-template.md) — copy-paste prompt format for teammates.
 - [Researcher runtime status](docs/researcher-runtime-status.md) — current no-API handoff and unblock actions.
+
+## Research briefs
+
+- [Node.js LTS baseline, May 2026](docs/research-briefs/nodejs-lts-2026-05.md)
