@@ -40,6 +40,9 @@ For a copy-ready prompt, use
 For source quality checks, use
 [`researcher-source-checklist.md`](researcher-source-checklist.md).
 
+For role-specific examples, use
+[`researcher-role-playbook.md`](researcher-role-playbook.md).
+
 ## Researcher response format
 
 The Researcher should return:
