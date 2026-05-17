@@ -21,6 +21,14 @@ the run and no actionable issue was available.
 - No product, technical, market, or business research question has been supplied
   yet, so no factual research answer can be produced without inventing scope.
 
+## Heartbeat log
+
+- 2026-05-17 18:25 UTC: Received another Researcher role heartbeat with
+  autonomous-mode instructions, but still no concrete research question,
+  assigned issue, or repository task. Paperclip API calls remain out of scope by
+  instruction. Current disposition remains blocked on input: a team member or
+  orchestrator must provide the research question to answer.
+
 ## Response format for the next research request
 
 When a concrete question arrives, use this structure:
