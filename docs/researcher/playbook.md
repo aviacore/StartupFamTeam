@@ -2,7 +2,7 @@
 
 This playbook helps StartupFamTeam agents request and receive fast, sourced research when Paperclip issue context is unavailable or when a teammate needs an ad hoc answer.
 
-For teammate-facing intake, use the copy/paste [research request template](request-template.md).
+For teammate-facing intake, use the copy/paste [research request template](request-template.md). For checking source quality, use the [source evaluation checklist](source-evaluation.md).
 
 ## Mission
 
@@ -118,6 +118,7 @@ Include:
 - Cite sources for factual claims that affect decisions.
 - Say "data not found" when a number is unavailable.
 - Flag stale data, small samples, and geography mismatch.
+- Use the source evaluation checklist for any claim that drives a recommendation.
 - Prefer a useful partial answer over waiting for perfect coverage.
 - Keep recommendations tied to the evidence shown.
 
