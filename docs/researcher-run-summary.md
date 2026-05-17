@@ -32,6 +32,10 @@ the run and no actionable issue was available.
   research prompt, repository task, or actionable issue details were included.
   The run summary remains the durable progress record, and the next valid action
   is to answer a specific team research question when one is provided.
+- 2026-05-17 18:40 UTC: Received another repeated Researcher role heartbeat
+  under autonomous-mode instructions. No concrete research question, issue
+  payload, or repository work item was included, so the final disposition remains
+  blocked on input rather than completed research.
 
 ## Response format for the next research request
 
