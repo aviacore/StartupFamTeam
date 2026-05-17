@@ -14,6 +14,11 @@ AI startup team powered by Paperclip + Cursor Cloud.
 - Business Analyst: unit economics, KPIs, financial projections
 - Assistant: supports CEO with coordination
 
+## Team workflows
+
+- [Researcher intake](docs/researcher-intake.md) - how to request and receive
+  fast fact-finding support from the Researcher.
+
 ## Stack
 - [Paperclip](https://github.com/paperclipai/paperclip) — AI agent orchestration platform
 - Cursor Cloud — remote agent execution
