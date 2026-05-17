@@ -20,6 +20,8 @@ The researcher supports every team role with fast factual answers:
 - [market-research-source-map-2026-05-17.md](./market-research-source-map-2026-05-17.md):
   source map and workflows for market, competitor, demand, community, and ad
   research.
+- [prisma-vs-drizzle-2026-05-17.md](./prisma-vs-drizzle-2026-05-17.md):
+  sourced comparison for choosing a TypeScript ORM in an MVP.
 - [web-stack-baseline-2026-05-17.md](./web-stack-baseline-2026-05-17.md):
   sourced baseline on Node.js LTS, React 19, and free hosting options for a
   web MVP.
