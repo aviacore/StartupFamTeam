@@ -30,6 +30,20 @@ Paperclip API endpoint was not accepting connections from this cloud agent.
 - No GitHub issues or pull requests were present for `aviacore/StartupFamTeam`.
 - The repository currently contains only the initial team scaffold (`README.md`).
 
+## 2026-05-17 17:17 UTC heartbeat update
+
+Repeated the smallest checks needed to determine whether work could continue:
+
+- Current branch is synced with `origin/cursor/paperclip-heartbeat-status-b6df`.
+- `GET $PAPERCLIP_API_URL/api/health` still fails with connection refused on
+  `127.0.0.1:3100`.
+- `GET $PAPERCLIP_API_URL/api/issues?assigneeId=$PAPERCLIP_AGENT_ID` still fails
+  with the same connection refusal.
+- `gh issue list --repo aviacore/StartupFamTeam --state all` still returns an
+  empty list.
+
+No new active task context was available in this heartbeat.
+
 ## Blocker
 
 Continuation is blocked until the Paperclip API/runtime is reachable or an explicit
