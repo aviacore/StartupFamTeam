@@ -146,6 +146,20 @@ Autonomous Mode restriction against Paperclip API calls.
   `docs/research-request-template.md`, a copy/paste request template with
   examples for technical comparisons and business/channel questions.
 
+## Follow-up heartbeat check: 2026-05-17 18:40 UTC
+
+The agent was woken again with the same Researcher/BA instructions and the same
+Autonomous Mode restriction against Paperclip API calls.
+
+- The Paperclip API was not called during this heartbeat.
+- Current branch is clean and tracking
+  `origin/cursor/paperclip-ba-heartbeat-status-951c` before edits.
+- GitHub issues and pull requests remain empty for this repository.
+- No concrete research or BA question was included in the wake payload.
+- Durable progress was made directly in the repository by adding
+  `docs/research-source-catalog.md`, a reusable list of preferred primary and
+  secondary sources for technical, product, market, and BA research.
+
 ## Blocker
 
 Continuation is blocked until the Paperclip runtime API is reachable or an
