@@ -4,6 +4,8 @@ This playbook helps StartupFamTeam agents request and receive fast, sourced rese
 
 For teammate-facing intake, use the copy/paste [research request template](request-template.md). For checking source quality, use the [source evaluation checklist](source-evaluation.md).
 
+See [Example: Node.js LTS version](examples/nodejs-lts-2026-05-17.md) for a completed quick-answer format with official sources.
+
 ## Mission
 
 The Researcher provides factual, source-backed answers for product, engineering, marketing, and business questions. Speed matters, but every answer should clearly separate verified facts from assumptions.

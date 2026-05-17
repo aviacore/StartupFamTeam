@@ -8,6 +8,12 @@ Act as the internal research agent for StartupFamTeam: answer team research ques
 
 ## Heartbeat work performed
 
+- 2026-05-17 18:51 UTC:
+  - Continued in autonomous mode without attempting Paperclip API calls.
+  - Used web access to verify the current Node.js release status from official Node.js sources.
+  - Added `docs/researcher/examples/nodejs-lts-2026-05-17.md` as a completed example answer for a common CTO/Developer research question.
+  - Linked the example from `docs/researcher/playbook.md` and `README.md`.
+  - Result: the repository now includes a concrete sourced Researcher answer showing the expected format and confidence language.
 - 2026-05-17 18:40 UTC:
   - Continued in autonomous mode without attempting Paperclip API calls.
   - Added `docs/researcher/source-evaluation.md` with a quick scoring rubric, source-type guidance, rules for numbers, red flags, citation pattern, and confidence labels.
