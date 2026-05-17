@@ -40,6 +40,10 @@ the run and no actionable issue was available.
   the same role instructions and no concrete research request. No Paperclip API
   calls were made, and the durable status remains blocked until a specific
   question or repository work item is supplied.
+- 2026-05-17 19:02 UTC: Received another repeated Researcher role heartbeat.
+  The payload still contains only role and autonomous-mode instructions, with no
+  specific research question to answer. The correct final disposition remains
+  blocked on input from a team member or orchestrator.
 
 ## Response format for the next research request
 
