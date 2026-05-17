@@ -17,6 +17,9 @@ The researcher supports every team role with fast factual answers:
 
 - [research-template.md](./research-template.md): copyable format for new
   research tasks.
+- [market-research-source-map-2026-05-17.md](./market-research-source-map-2026-05-17.md):
+  source map and workflows for market, competitor, demand, community, and ad
+  research.
 - [web-stack-baseline-2026-05-17.md](./web-stack-baseline-2026-05-17.md):
   sourced baseline on Node.js LTS, React 19, and free hosting options for a
   web MVP.
