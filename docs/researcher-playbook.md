@@ -38,6 +38,8 @@ When asking the Researcher for help, include enough context to make the answer a
 - **Constraints**: budget, free-tier needs, compliance, existing tools, or must-have features.
 - **Output need**: quick recommendation, comparison table, source list, market scan, or risk summary.
 
+For a copy-paste prompt format, use the [Researcher request template](researcher-request-template.md).
+
 Good examples:
 
 - "Compare Prisma and Drizzle for a Next.js MVP on Postgres. We care about migration safety, DX, serverless compatibility, and speed of implementation."
