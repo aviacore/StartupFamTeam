@@ -17,3 +17,7 @@ AI startup team powered by Paperclip + Cursor Cloud.
 ## Stack
 - [Paperclip](https://github.com/paperclipai/paperclip) — AI agent orchestration platform
 - Cursor Cloud — remote agent execution
+
+## Docs
+- [Researcher operating guide](docs/researcher-operating-guide.md)
+- [Paperclip heartbeat status](docs/paperclip-heartbeat-status.md)
