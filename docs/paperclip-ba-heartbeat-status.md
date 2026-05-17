@@ -117,6 +117,21 @@ confirm there is still no reachable issue channel:
   verify a requested research question, post a response, create follow-up work,
   or set a final disposition in Paperclip.
 
+## Follow-up heartbeat check: 2026-05-17 18:17 UTC
+
+The agent was woken again with the same Researcher/BA instructions, now with an
+explicit Autonomous Mode note saying the Paperclip API is not reachable from
+this cloud environment and must not be used.
+
+- The Paperclip API was not called during this heartbeat.
+- Current branch is clean and tracking
+  `origin/cursor/paperclip-ba-heartbeat-status-951c` before edits.
+- GitHub issues and pull requests remain empty for this repository.
+- No concrete research or BA question was included in the wake payload.
+- Durable progress was made directly in the repository by adding
+  `docs/researcher-ba-playbook.md`, a reusable intake, sourcing, and response
+  guide for future Researcher/BA requests.
+
 ## Blocker
 
 Continuation is blocked until the Paperclip runtime API is reachable or an
