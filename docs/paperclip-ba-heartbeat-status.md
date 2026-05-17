@@ -52,6 +52,22 @@ confirmed the blocker is still active:
   issue comment, create an interaction, create child issues, or set the issue
   disposition through Paperclip.
 
+## Follow-up heartbeat check: 2026-05-17 17:32 UTC
+
+The agent was woken again with the same Researcher/BA instructions. Re-checks
+still show no actionable task channel:
+
+- Current branch is clean and tracking
+  `origin/cursor/paperclip-ba-heartbeat-status-951c`.
+- GitHub issues and pull requests remain empty for this repository.
+- Paperclip endpoints `/api/health`, `/health`,
+  `/api/agents/$PAPERCLIP_AGENT_ID`, `/api/runs/$PAPERCLIP_RUN_ID`, and
+  `/api/issues?assigneeId=$PAPERCLIP_AGENT_ID` still fail with connection
+  refused on localhost port `3100`.
+- No issue ID, comment thread, interaction target, child-issue parent, or
+  disposition endpoint is reachable from this runtime, so the correct external
+  disposition remains `blocked` by the Paperclip runtime/API outage.
+
 ## Blocker
 
 Continuation is blocked until the Paperclip runtime API is reachable or an
