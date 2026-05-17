@@ -91,17 +91,37 @@ assignment checks:
 No actionable research work can be performed without inventing a task. The
 blocked disposition and unblock owner/action below remain current.
 
+## Follow-up heartbeat check - 2026-05-17 18:17 UTC
+
+The agent was woken a fifth time with explicit Autonomous Mode instructions:
+work directly on the repository and do not attempt Paperclip API calls. I
+therefore did not probe `PAPERCLIP_API_URL`.
+
+Repository-only checks:
+
+- Current branch is clean and tracking
+  `origin/cursor/researcher-runtime-blocked-51e4`.
+- GitHub issues and pull requests for the repository still return empty lists.
+- The heartbeat prompt still contains only the general Researcher role
+  instructions, not a concrete research question, target document, or requested
+  deliverable.
+
+The final disposition remains blocked at the work-item level: without a concrete
+research question or task payload, producing a sourced research answer would
+require inventing scope.
+
 ## Blocker
 
 Status: blocked
 
-Unblock owner/action: Paperclip runtime owner should restore the local
-`PAPERCLIP_API_URL` service for this run or provide the assigned issue/task
-payload through another channel.
+Unblock owner/action: Paperclip runtime owner or board/user should provide the
+assigned issue/task payload or a concrete research question through the run
+prompt, repository, or another reachable channel.
 
 After that is available, the next Researcher heartbeat should:
 
-1. Fetch the assigned issue and any comments/interactions.
+1. Read the assigned issue/task payload from the reachable channel.
 2. Answer the concrete research question with sources.
 3. Persist the answer to the issue thread or requested document/work product.
-4. Update the issue to the correct final disposition.
+4. Update the issue to the correct final disposition when a reachable issue
+   channel exists; otherwise report completion in the run summary.
