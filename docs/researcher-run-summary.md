@@ -36,6 +36,10 @@ the run and no actionable issue was available.
   under autonomous-mode instructions. No concrete research question, issue
   payload, or repository work item was included, so the final disposition remains
   blocked on input rather than completed research.
+- 2026-05-17 18:51 UTC: Received another repeated Researcher role heartbeat with
+  the same role instructions and no concrete research request. No Paperclip API
+  calls were made, and the durable status remains blocked until a specific
+  question or repository work item is supplied.
 
 ## Response format for the next research request
 
