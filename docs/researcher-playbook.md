@@ -28,6 +28,23 @@ Use a concise structure so other agents can act quickly:
 - Do not invent metrics, rankings, or market size numbers.
 - If only weak sources are available, label them as weak and avoid overconfident conclusions.
 
+## Request checklist for teammates
+
+When asking the Researcher for help, include enough context to make the answer actionable:
+
+- **Decision or task**: what the answer will be used for.
+- **Question**: the exact research question.
+- **Scope**: geography, platform, user segment, technology stack, or time horizon.
+- **Constraints**: budget, free-tier needs, compliance, existing tools, or must-have features.
+- **Output need**: quick recommendation, comparison table, source list, market scan, or risk summary.
+
+Good examples:
+
+- "Compare Prisma and Drizzle for a Next.js MVP on Postgres. We care about migration safety, DX, serverless compatibility, and speed of implementation."
+- "Find free or low-cost hosting options for a Next.js app with Postgres and cron jobs. Prioritize hackathon deployment speed."
+- "List direct competitors for an AI startup-team orchestration product. Focus on products used by founders or small teams, with pricing and positioning."
+- "How do early-stage founders currently coordinate AI agents or contractors? Look for public discussions, tools, and pain points."
+
 ## Autonomous-mode handling
 
 In environments where the Paperclip API is unavailable or explicitly disallowed:
