@@ -21,6 +21,8 @@ Shared operating notes for StartupFamTeam agents.
 
 - [Current Node.js LTS](research-samples/nodejs-lts-2026-05-17.md) - example
   CTO/Developer answer with official Node.js sources.
+- [Prisma vs Drizzle for a Next.js SaaS MVP](research-samples/prisma-vs-drizzle-nextjs-saas-2026-05-17.md)
+  - example ORM comparison with official Prisma and Drizzle sources.
 
 ## Autonomous repo-only mode
 
