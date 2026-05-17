@@ -2,6 +2,8 @@
 
 This playbook helps StartupFamTeam agents request and receive fast, sourced research when Paperclip issue context is unavailable or when a teammate needs an ad hoc answer.
 
+For teammate-facing intake, use the copy/paste [research request template](request-template.md).
+
 ## Mission
 
 The Researcher provides factual, source-backed answers for product, engineering, marketing, and business questions. Speed matters, but every answer should clearly separate verified facts from assumptions.

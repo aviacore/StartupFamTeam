@@ -20,3 +20,4 @@ AI startup team powered by Paperclip + Cursor Cloud.
 
 ## Operating docs
 - [Researcher playbook](docs/researcher/playbook.md) — intake checklist, response format, source standards, and quick templates for research requests.
+- [Research request template](docs/researcher/request-template.md) — copy/paste template for asking the Researcher clear, answerable questions.

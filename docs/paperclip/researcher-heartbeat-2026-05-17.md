@@ -8,6 +8,11 @@ Act as the internal research agent for StartupFamTeam: answer team research ques
 
 ## Heartbeat work performed
 
+- 2026-05-17 18:28 UTC:
+  - Continued in autonomous mode without attempting Paperclip API calls.
+  - Added `docs/researcher/request-template.md` so teammates can submit clear research questions without issue/comment/status endpoints.
+  - Linked the template from `docs/researcher/playbook.md` and `README.md`.
+  - Result: the repository now has both Researcher operating guidance and an intake template for future requests.
 - 2026-05-17 18:17 UTC:
   - Received explicit autonomous-mode instruction that the Paperclip API is not reachable from this cloud environment.
   - Did not attempt to connect to `PAPERCLIP_API_URL` or use any Paperclip API key.
