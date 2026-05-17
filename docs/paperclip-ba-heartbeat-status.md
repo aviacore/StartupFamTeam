@@ -36,6 +36,22 @@ comments, interactions, and final disposition could not be read or updated.
 - No active issue payload, research question, business-analysis request, or
   final-disposition target is available through the local workspace.
 
+## Follow-up heartbeat check: 2026-05-17 17:21 UTC
+
+The agent was woken again with the same Researcher/BA instructions. Re-checks
+confirmed the blocker is still active:
+
+- Current branch is clean and tracking
+  `origin/cursor/paperclip-ba-heartbeat-status-951c`.
+- GitHub issues and pull requests remain empty for this repository.
+- Paperclip endpoints `/api/health`, `/health`,
+  `/api/agents/$PAPERCLIP_AGENT_ID`, `/api/runs/$PAPERCLIP_RUN_ID`, and
+  `/api/issues?assigneeId=$PAPERCLIP_AGENT_ID` still fail with connection
+  refused on localhost port `3100`.
+- Because no issue ID or payload is reachable, the agent still cannot post an
+  issue comment, create an interaction, create child issues, or set the issue
+  disposition through Paperclip.
+
 ## Blocker
 
 Continuation is blocked until the Paperclip runtime API is reachable or an
