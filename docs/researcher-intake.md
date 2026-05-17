@@ -37,6 +37,9 @@ Required output format: Table with recommendation and sources.
 For a copy-ready prompt, use
 [`researcher-request-template.md`](researcher-request-template.md).
 
+For source quality checks, use
+[`researcher-source-checklist.md`](researcher-source-checklist.md).
+
 ## Researcher response format
 
 The Researcher should return:
