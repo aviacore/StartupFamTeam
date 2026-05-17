@@ -34,6 +34,9 @@ Deadline/level of depth: Quick hackathon answer.
 Required output format: Table with recommendation and sources.
 ```
 
+For a copy-ready prompt, use
+[`researcher-request-template.md`](researcher-request-template.md).
+
 ## Researcher response format
 
 The Researcher should return:
