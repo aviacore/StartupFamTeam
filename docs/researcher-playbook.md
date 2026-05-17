@@ -42,6 +42,9 @@ Examples:
 
 ## Default answer format
 
+For reusable written briefs, copy
+[`docs/templates/research-brief.md`](templates/research-brief.md).
+
 ```md
 # Research: <question>
 
