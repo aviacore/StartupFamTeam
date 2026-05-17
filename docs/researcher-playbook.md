@@ -69,6 +69,9 @@ For reusable written briefs, copy
 
 ## Source quality checklist
 
+Start from the [`Research Source Registry`](research-source-registry.md) when a
+request fits a common technical, market, competitor, or channel question.
+
 Prefer:
 
 - Official documentation, release notes, pricing pages, and status pages.

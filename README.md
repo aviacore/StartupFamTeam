@@ -20,3 +20,4 @@ AI startup team powered by Paperclip + Cursor Cloud.
 
 ## Operating docs
 - [Researcher Playbook](docs/researcher-playbook.md) — response format, source standards, and research patterns.
+- [Research Source Registry](docs/research-source-registry.md) — starting points for technical, market, competitor, and channel research.
