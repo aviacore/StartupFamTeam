@@ -39,6 +39,23 @@ research answer without inventing scope. Because the issue API is unreachable, I
 also cannot post an issue comment, create a child issue, create an interaction,
 or set the Paperclip issue disposition directly.
 
+## Follow-up heartbeat check - 2026-05-17 17:42 UTC
+
+The agent was woken again with the same Researcher instructions and no concrete
+research question in the prompt. I rechecked the available state:
+
+- Current branch is clean and tracking
+  `origin/cursor/researcher-runtime-blocked-51e4`.
+- All seven `PAPERCLIP_*` runtime variables are still present.
+- GitHub issues and pull requests for the repository still return empty lists.
+- Paperclip API routes `/health`, `/api/health`, `/api/issues`,
+  assignee-filtered issues, agent lookup, run lookup, company issues, and
+  company+assignee-filtered issues still fail with connection refused.
+
+The blocker remains unchanged: there is still no reachable issue payload or
+research request to answer, and no reachable Paperclip issue endpoint to mark
+the issue disposition directly.
+
 ## Blocker
 
 Status: blocked
