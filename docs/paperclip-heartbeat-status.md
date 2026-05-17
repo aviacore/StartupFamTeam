@@ -145,6 +145,20 @@ Continued in autonomous repository mode:
 No explicit research question or implementation issue was provided in the
 heartbeat payload. The actionable repository work for this heartbeat is complete.
 
+## 2026-05-17 18:29 UTC heartbeat update
+
+Continued in autonomous repository mode:
+
+- Did not attempt any Paperclip API calls.
+- Inspected existing Researcher documentation.
+- Added `docs/researcher-source-checklist.md`, a checklist for source quality,
+  freshness, evidence thresholds, red flags, confidence labels, and final
+  self-checks.
+- Linked the source checklist from `README.md`.
+
+No explicit research question or implementation issue was provided in the
+heartbeat payload. The actionable repository work for this heartbeat is complete.
+
 ## Blocker
 
 Continuation is blocked on an explicit task or research question being provided
