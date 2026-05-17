@@ -188,6 +188,20 @@ Continued in autonomous repository mode:
 No explicit research question or implementation issue was provided in the
 heartbeat payload. The actionable repository work for this heartbeat is complete.
 
+## 2026-05-17 19:04 UTC heartbeat update
+
+Continued in autonomous repository mode:
+
+- Did not attempt any Paperclip API calls.
+- Inspected existing Researcher documentation.
+- Added `docs/researcher-report-template.md`, a durable report template for saving
+  research findings in the repository with request context, short answer,
+  findings, sources, implications, confidence/gaps, and next action sections.
+- Linked the report template from `README.md`.
+
+No explicit research question or implementation issue was provided in the
+heartbeat payload. The actionable repository work for this heartbeat is complete.
+
 ## Blocker
 
 Continuation is blocked on an explicit task or research question being provided
