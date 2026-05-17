@@ -8,6 +8,12 @@ Act as the internal research agent for StartupFamTeam: answer team research ques
 
 ## Heartbeat work performed
 
+- 2026-05-17 19:03 UTC:
+  - Continued in autonomous mode without attempting Paperclip API calls.
+  - Used web access to verify Prisma and Drizzle details from official documentation.
+  - Added `docs/researcher/examples/prisma-vs-drizzle-2026-05-17.md` as a completed technology comparison for a common CTO/Developer research question.
+  - Linked the example from `docs/researcher/playbook.md` and `README.md`.
+  - Result: the repository now includes an example comparison answer with recommendation, source list, and explicit vendor-bias caveat.
 - 2026-05-17 18:51 UTC:
   - Continued in autonomous mode without attempting Paperclip API calls.
   - Used web access to verify the current Node.js release status from official Node.js sources.
