@@ -20,6 +20,9 @@ The researcher supports every team role with fast factual answers:
 - [market-research-source-map-2026-05-17.md](./market-research-source-map-2026-05-17.md):
   source map and workflows for market, competitor, demand, community, and ad
   research.
+- [monetization-source-map-2026-05-17.md](./monetization-source-map-2026-05-17.md):
+  source map for business models, pricing-page teardown, payment fees, platform
+  commissions, and unit-economics assumptions.
 - [prisma-vs-drizzle-2026-05-17.md](./prisma-vs-drizzle-2026-05-17.md):
   sourced comparison for choosing a TypeScript ORM in an MVP.
 - [web-stack-baseline-2026-05-17.md](./web-stack-baseline-2026-05-17.md):
