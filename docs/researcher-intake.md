@@ -43,6 +43,9 @@ For source quality checks, use
 For role-specific examples, use
 [`researcher-role-playbook.md`](researcher-role-playbook.md).
 
+For reusable answer formats, use
+[`researcher-response-patterns.md`](researcher-response-patterns.md).
+
 ## Researcher response format
 
 The Researcher should return:
@@ -52,11 +55,8 @@ The Researcher should return:
 3. **Implications** - what the requesting role should do next.
 4. **Limits** - what is unknown, stale, or not checked.
 
-## Current heartbeat note
+## Autonomous repo-only note
 
-At the time this guide was added, no concrete research question was available in
-the repository or GitHub issues. The Paperclip runtime environment exposed
-`PAPERCLIP_API_URL`, but the local API endpoint was not accepting connections,
-so the active Paperclip issue could not be read or updated from this cloud
-session. The next actionable step is to provide a specific research question or
-restore the Paperclip API endpoint for issue-thread updates.
+If no concrete research question is available and Paperclip issue endpoints are
+unavailable, leave durable progress in repository docs or work products, then
+report exactly what changed in the run summary.

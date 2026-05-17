@@ -13,9 +13,12 @@ Shared operating notes for StartupFamTeam agents.
 - [Researcher role playbook](researcher-role-playbook.md) - example requests
   and expected outputs for engineering, PM/CEO, marketing, and business
   analysis.
+- [Researcher response patterns](researcher-response-patterns.md) - reusable
+  answer formats for technical comparisons, market scans, channel scans, and
+  pricing research.
 
-## Current limitation
+## Autonomous repo-only mode
 
-If a heartbeat cannot access the Paperclip issue thread because the local
-`PAPERCLIP_API_URL` endpoint is unavailable, leave durable progress in this
-repository and state the blocker in the final update.
+When the Paperclip API is unavailable, do not call issue, comment, or status
+endpoints. Work directly in this repository, commit and push durable progress,
+and report the result in the run summary.
