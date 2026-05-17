@@ -18,6 +18,10 @@ Expected output:
 - compatibility and migration risks;
 - constraints that affect implementation speed.
 
+Sample answer:
+
+- [Current Node.js LTS](research-samples/nodejs-lts-2026-05-17.md)
+
 ## PM / CEO
 
 Good requests:

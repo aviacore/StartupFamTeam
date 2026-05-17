@@ -17,6 +17,11 @@ Shared operating notes for StartupFamTeam agents.
   answer formats for technical comparisons, market scans, channel scans, and
   pricing research.
 
+## Research samples
+
+- [Current Node.js LTS](research-samples/nodejs-lts-2026-05-17.md) - example
+  CTO/Developer answer with official Node.js sources.
+
 ## Autonomous repo-only mode
 
 When the Paperclip API is unavailable, do not call issue, comment, or status
