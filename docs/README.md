@@ -28,6 +28,9 @@ Shared operating notes for StartupFamTeam agents.
 - [Free hosting for a Next.js MVP](research-samples/nextjs-free-hosting-2026-05-17.md)
   - example hosting comparison with official Vercel, Netlify, and Cloudflare
   sources.
+- [AI agent orchestration alternatives](research-samples/ai-agent-orchestration-alternatives-2026-05-17.md)
+  - example alternatives scan with official LangGraph, CrewAI, AutoGen, and
+  OpenAI Agents SDK sources.
 
 ## Autonomous repo-only mode
 

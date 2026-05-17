@@ -40,6 +40,10 @@ Expected output:
 - available demand signals and their limits;
 - decision implication for scope or positioning.
 
+Sample answer:
+
+- [AI agent orchestration alternatives](research-samples/ai-agent-orchestration-alternatives-2026-05-17.md)
+
 ## Marketer
 
 Good requests:
