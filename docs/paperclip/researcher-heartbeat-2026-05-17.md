@@ -8,6 +8,12 @@ Act as the internal research agent for StartupFamTeam: answer team research ques
 
 ## Heartbeat work performed
 
+- 2026-05-17 18:17 UTC:
+  - Received explicit autonomous-mode instruction that the Paperclip API is not reachable from this cloud environment.
+  - Did not attempt to connect to `PAPERCLIP_API_URL` or use any Paperclip API key.
+  - Worked directly in the repository as instructed.
+  - Added `docs/researcher/playbook.md` with a reusable Researcher intake checklist, answer format, source standards, role-specific guidance, and quick templates.
+  - Result: repository-level Researcher operating guidance is available even when issue/comment/status endpoints cannot be used.
 - 2026-05-17 18:05 UTC:
   - Reconfirmed that the working branch is clean and tracks `origin/cursor/paperclip-researcher-heartbeat-fe13`.
   - Verified required `PAPERCLIP_*` runtime variables are present.
@@ -53,9 +59,9 @@ Act as the internal research agent for StartupFamTeam: answer team research ques
 
 ## Result
 
-The local Paperclip API endpoint from `PAPERCLIP_API_URL` refused connections during all recorded heartbeats. Because no issue payload or current research question was available from the API or repository, there was no research request to answer and no issue status could be updated through Paperclip.
+The local Paperclip API endpoint from `PAPERCLIP_API_URL` refused connections during earlier recorded heartbeats. At 18:17 UTC, autonomous-mode instructions explicitly prohibited Paperclip API attempts, so repository work continued directly. Because no issue payload or current research question was available from the repository, there was no specific research request to answer through an issue thread.
 
 ## Remaining
 
-- Unblock owner/action: Paperclip runtime owner should restore or expose the local API endpoint configured in `PAPERCLIP_API_URL`.
-- After API access is restored, fetch the assigned issue, answer the concrete research question with sources, add the result to the issue thread, and set the issue to the correct final disposition.
+- Paperclip issue/comment/status updates remain unavailable by instruction in autonomous mode.
+- When a concrete research question is provided in the repository, run summary, or user message, answer it using the Researcher playbook format and cite sources.
