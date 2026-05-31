@@ -739,15 +739,14 @@ def run_agent(slug, task_text, shared_context, idx, total, is_short, ts, request
                     f.write(f"# {agent_name} — Output\n\n{clean_response}")
                 add_log(slug, f'Result saved')
 
-                # CEO (last agent) always saves final output to project root
-                if idx == total - 1 or slug == 'ceo':
-                    is_html = '<html' in clean_response.lower() or '<!doctype' in clean_response.lower()
-                    ext = '.html' if is_html else '.md'
-                    root_name = f'output{ext}'
-                    root_path = os.path.join(PROJECT_DIR, root_name)
-                    with open(root_path, 'w', encoding='utf-8') as f:
-                        f.write(clean_response)
-                    add_log(slug, f'✅ Wrote final {root_name} to project root')
+            # Always write HTML output to project/output.html
+            is_html = '<html' in clean_response.lower() or '<!doctype' in clean_response.lower()
+            ext = '.html' if is_html else '.md'
+            root_name = f'output{ext}'
+            root_path = os.path.join(PROJECT_DIR, root_name)
+            with open(root_path, 'w', encoding='utf-8') as f:
+                f.write(clean_response)
+            add_log(slug, f'✅ Wrote final {root_name} to project root')
 
             set_progress(slug, 'done', provider=provider)
             return f"\n\n### {agent_name} (via {provider})\n{response}", True

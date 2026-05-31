@@ -1,73 +1,82 @@
 # Developer — Kickoff
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prospect Page</title>
+    <title>CraftStack — AI Agent Workbench</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            transition: background-color 0.3s;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .button-container {
-            margin: 20px 0;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #007bff;
+
+        header {
+            background-color: #4CAF50;
             color: white;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 800px;
+        }
+
+        button {
+            background-color: #4CAF50;
             border: none;
-            border-radius: 5px;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 16px;
         }
-        button:hover {
-            background-color: #0056b3;
-        }
-        
+
         @media print {
-            * {
-                -webkit-print-color-adjust: exact !important; /* Chrome, Safari */
-                color-adjust: exact !important;  /*Firefox*/
-            }
-            body {
-                background-color: white !important;
-                color: black;
-            }
             button {
                 display: none;
             }
         }
-        
+
         @media (max-width: 600px) {
-            h1 {
-                font-size: 24px;
+            main {
+                width: 95%;
+                padding: 10px;
             }
-            p {
-                font-size: 16px;
+
+            header {
+                font-size: 18px;
+            }
+
+            button {
+                width: 100%;
+                padding: 15px;
             }
         }
     </style>
 </head>
+
 <body>
+    <header>
+        CraftStack — AI Agent Workbench
+    </header>
 
-    <h1>Welcome to the Prospect Page</h1>
-    <p>This is an example of a prospect page with a button to open more information.</p>
-
-    <div class="button-container">
-        <button onclick="changeBackgroundColor()">Открыть проспект</button>
-    </div>
-
-    <script>
-        function changeBackgroundColor() {
-            document.body.style.backgroundColor = 
-                document.body.style.backgroundColor === 'lightcoral' ? '' : 'lightcoral';
-        }
-    </script>
-
+    <main>
+        <h1>Добро пожаловать в CraftStack</h1>
+        <p>Эта платформа предоставляет легкий интерфейс для использования и управления ИИ-агентами в рамках рабочих процессов. Мы предлагаем простоту и мощные инструменты для твоего бизнеса.</p>
+        <button onclick="window.open('prospect.pdf')">Открыть проспект</button>
+    </main>
 </body>
+
 </html>
