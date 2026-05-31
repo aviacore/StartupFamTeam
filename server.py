@@ -1263,6 +1263,7 @@ class Handler(BaseHTTPRequestHandler):
             s['chat'] = []
             s['pending_question'] = ''
             s['log'] = [{"time": time.strftime("%H:%M"), "agent": "system", "text": f"📝 New task: {task_text[:60]}..."}]
+            write_state(s)
             threading.Thread(target=_background_route, args=(task_text, agents,), daemon=True).start()
             self.send_response(200)
             self._cors()
