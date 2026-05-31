@@ -935,6 +935,7 @@ def run_pipeline(task_text, agents, is_short, routing, subtasks=None):
         s['phase'] = 'done'
         write_state(s)
         add_log('system', '✅ Pipeline complete!')
+        add_chat_message('system', '✅ Пайплайн завершён!\n📄 Результат: project/output.html')
     except Exception as e:
         add_log('system', f'💥 Pipeline crashed: {str(e)[:200]}')
         import traceback
@@ -1264,6 +1265,9 @@ class Handler(BaseHTTPRequestHandler):
             s['pipeline_routing'] = {}
             s['chat'] = []
             s['pending_question'] = ''
+            s['pending_answer'] = ''
+            s['currentAgent'] = '-'
+            s['error'] = ''
             s['log'] = [{"time": time.strftime("%H:%M"), "agent": "system", "text": "Pipeline started"}]
             s['status'] = 'running'
             s['phase'] = 'analysis'
