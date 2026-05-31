@@ -947,27 +947,6 @@ def run_pipeline(task_text, agents, is_short, routing, subtasks=None):
         write_state(s)
 
 
-def _background_route(task_text, agents):
-    """Run AI router in background to not block task submission."""
-    config = read_config()
-    try:
-        router_agents, router_routing = router_agent(task_text, config)
-        agents = router_agents if not agents else agents
-        routing = read_routing()
-        if router_routing:
-            for slug, prov in router_routing.items():
-                if slug not in routing:
-                    routing[slug] = {"provider": prov}
-            write_routing(routing)
-        write_agents(agents)
-        s = read_state()
-        s['agents'] = agents
-        write_state(s)
-        add_log('system', f'🤖 Router: agents ready ({", ".join(agents)})')
-    except Exception as e:
-        add_log('system', f'⚠️ Background routing failed: {str(e)[:100]}')
-
-
 # ═══════════════════════════════════════════════
 # HTTP HANDLER
 # ═══════════════════════════════════════════════
@@ -1225,6 +1204,18 @@ class Handler(BaseHTTPRequestHandler):
                     f.write(task_text)
             if agents:
                 write_agents(agents)
+            # Run routing synchronously (fast with 30s timeout)
+            config = read_config()
+            router_agents, router_routing = router_agent(task_text, config)
+            if not agents:
+                agents = router_agents
+            # Save routing from router
+            routing = read_routing()
+            if router_routing:
+                for slug, prov in router_routing.items():
+                    if slug not in routing:
+                        routing[slug] = {"provider": prov}
+                write_routing(routing)
             write_agents(agents)
             s = read_state()
             s['task'] = task_text
@@ -1233,13 +1224,11 @@ class Handler(BaseHTTPRequestHandler):
             s['agents'] = agents
             write_state(s)
             add_log('system', f'📝 Task received ({len(agents)} agent(s)): {task_text[:100]}...')
-            # Launch AI router in background (non-blocking)
-            threading.Thread(target=_background_route, args=(task_text, agents,), daemon=True).start()
             self.send_response(200)
             self._cors()
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()
-            self.wfile.write(json.dumps({"ok": True, "agents": agents}, ensure_ascii=False).encode())
+            self.wfile.write(json.dumps({"ok": True, "agents": agents, "routing": router_routing}, ensure_ascii=False).encode())
             return
 
         if path == '/api/start':
