@@ -625,16 +625,16 @@ function renderAgents(spec){
   AGENTS.forEach(a=>{
     if(currSpec!=='all' && a.sp!==currSpec) return;
     const on = onAgents.has(a.id);
+    const execStatus = window._lastState?.progress?.[a.id]?.status;
     const d = document.createElement('div');
     d.className = 'agent-item'+(on || execStatus ? ' on':'');
     d.dataset.slug = a.id;
-    const provId = getAgentProvider(a.id);
-    const provLabel = getProviderLabel(provId);
-    let provStatus = _providerHealth[provId] || 'unknown';
-    if (provStatus === 'unknown' && window._savedKeys && window._savedKeys[provId]) provStatus = 'ok';
+    const usedProv = (execStatus && window._lastState?.progress?.[a.id]?.provider) || getAgentProvider(a.id);
+    const provLabel = getProviderLabel(usedProv);
+    let provStatus = _providerHealth[usedProv] || 'unknown';
+    if (provStatus === 'unknown' && window._savedKeys && window._savedKeys[usedProv]) provStatus = 'ok';
     const dotColor = provStatus==='ok' ? '#00b894' : provStatus==='nobill' ? '#fdcb6e' : '#8888a0';
     // Per-agent execution status
-    const execStatus = window._lastState?.progress?.[a.id]?.status;
     let mdStyle, mdText;
     if (!execStatus) {
       mdStyle = 'background:var(--card);color:var(--text3);border-color:var(--card-border)';
