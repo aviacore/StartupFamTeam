@@ -10,7 +10,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
 PIPELINE_TIMEOUT = 600  # max total pipeline seconds
-AI_TIMEOUT = 10         # seconds per provider call (fast fail = fast fallback)
+AI_TIMEOUT = 20         # seconds per provider call (fast fail = fast fallback)
 ASK_TIMEOUT = 60        # max seconds waiting for user input
 
 HERE = os.path.dirname(os.path.abspath(__file__))
