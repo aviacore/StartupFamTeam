@@ -639,7 +639,13 @@ function renderAgents(spec){
     if (!execStatus) {
       mdStyle = 'background:var(--card);color:var(--text3);border-color:var(--card-border)';
       mdText = t('off');
-    } else if (execStatus === 'running' || execStatus === 'done') {
+    } else if (execStatus === 'running') {
+      mdStyle = 'background:rgba(0,184,148,0.15);color:#00b894;border-color:rgba(0,184,148,0.25)';
+      mdText = t('on');
+    } else if (execStatus === 'done' && provStatus !== 'ok') {
+      mdStyle = 'background:rgba(253,203,110,0.15);color:#fdcb6e;border-color:rgba(253,203,110,0.25)';
+      mdText = t('on');
+    } else if (execStatus === 'done') {
       mdStyle = 'background:rgba(0,184,148,0.15);color:#00b894;border-color:rgba(0,184,148,0.25)';
       mdText = t('on');
     } else if (execStatus === 'error') {
