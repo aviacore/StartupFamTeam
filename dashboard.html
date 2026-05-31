@@ -1034,6 +1034,13 @@ function clearTask(){
   if (cb) cb.innerHTML = '<div style="color:var(--text3);padding:4px 0;font-style:italic">💬 Пайплайн может задать вопрос — ответишь здесь</div>';
   if (cc) cc.textContent = '0';
   window._lastState = null;
+  // Clear graph
+  const gb = document.getElementById('graphBody');
+  if (gb) gb.innerHTML = '';
+  const gw = document.getElementById('graphWrap');
+  if (gw) gw.style.display = 'none';
+  // Clear agents badges
+  document.querySelectorAll('.md-badge').forEach(b => { b.textContent = '○'; b.style.color = 'var(--text3)'; });
   renderAgents(currSpec);
   // Reset pipeline viz
   const pv = document.getElementById('pvTask');

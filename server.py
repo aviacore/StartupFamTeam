@@ -1255,6 +1255,13 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps({"ok": False, "error": "No task"}).encode())
                 return
+            # Clear stale state from previous run
+            s['progress'] = {}
+            s['graph'] = []
+            s['pipeline_routing'] = {}
+            s['chat'] = []
+            s['pending_question'] = ''
+            s['log'] = [{"time": time.strftime("%H:%M"), "agent": "system", "text": "Pipeline started"}]
             s['status'] = 'running'
             s['phase'] = 'analysis'
             write_state(s)
@@ -1273,11 +1280,13 @@ class Handler(BaseHTTPRequestHandler):
             s['phase'] = 'idle'
             s['task'] = ''
             s['agents'] = []
-            s['current_agent'] = '-'
+            s['currentAgent'] = '-'
             s['progress'] = {}
             s['error'] = ''
             s['log'] = []
             s['chat'] = []
+            s['graph'] = []
+            s['pipeline_routing'] = {}
             s['pending_question'] = ''
             write_state(s)
             if os.path.exists(TASK_PATH):
