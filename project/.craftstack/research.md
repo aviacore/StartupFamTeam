@@ -184,6 +184,6 @@ ceo/
 
 ## GitHub search results for: paperclip
 
-- [paperclip](https://github.com/paperclipai/paperclip) — The open-source app everyone uses to manage agents at work (⭐68463, TypeScript)
+- [paperclip](https://github.com/paperclipai/paperclip) — The open-source app everyone uses to manage agents at work (⭐68474, TypeScript)
 - [paperclip](https://github.com/thoughtbot/paperclip) — Easy file attachment management for ActiveRecord (⭐9017, Ruby)
-- [hermes-paperclip-adapter](https://github.com/NousResearch/hermes-paperclip-adapter) — Paperclip adapter for Hermes Agent — run Hermes as a managed employee in a Paperclip company (⭐1449, TypeScript)
+- [hermes-paperclip-adapter](https://github.com/NousResearch/hermes-paperclip-adapter) — Paperclip adapter for Hermes Agent — run Hermes as a managed employee in a Paperclip company (⭐1450, TypeScript)

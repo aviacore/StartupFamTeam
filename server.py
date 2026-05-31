@@ -1255,8 +1255,14 @@ class Handler(BaseHTTPRequestHandler):
             s['status'] = 'waiting'
             s['phase'] = 'waiting'
             s['agents'] = agents
-            write_state(s)
-            add_log('system', f'📝 Task received, routing in background...')
+            s['progress'] = {}
+            s['provider_status'] = {}
+            s['graph'] = []
+            s['currentAgent'] = '-'
+            s['error'] = ''
+            s['chat'] = []
+            s['pending_question'] = ''
+            s['log'] = [{"time": time.strftime("%H:%M"), "agent": "system", "text": f"📝 New task: {task_text[:60]}..."}]
             threading.Thread(target=_background_route, args=(task_text, agents,), daemon=True).start()
             self.send_response(200)
             self._cors()
