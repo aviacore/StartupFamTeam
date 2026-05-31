@@ -146,7 +146,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
 PIPELINE_TIMEOUT = 600  # max total pipeline seconds
-AI_TIMEOUT = 30         # second
+AI_TIMEOUT = 10         # second
 
 ---
 
@@ -184,6 +184,6 @@ ceo/
 
 ## GitHub search results for: paperclip
 
-- [paperclip](https://github.com/paperclipai/paperclip) — The open-source app everyone uses to manage agents at work (⭐68430, TypeScript)
+- [paperclip](https://github.com/paperclipai/paperclip) — The open-source app everyone uses to manage agents at work (⭐68463, TypeScript)
 - [paperclip](https://github.com/thoughtbot/paperclip) — Easy file attachment management for ActiveRecord (⭐9017, Ruby)
-- [hermes-paperclip-adapter](https://github.com/NousResearch/hermes-paperclip-adapter) — Paperclip adapter for Hermes Agent — run Hermes as a managed employee in a Paperclip company (⭐1446, TypeScript)
+- [hermes-paperclip-adapter](https://github.com/NousResearch/hermes-paperclip-adapter) — Paperclip adapter for Hermes Agent — run Hermes as a managed employee in a Paperclip company (⭐1449, TypeScript)

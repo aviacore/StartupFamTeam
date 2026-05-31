@@ -29,14 +29,14 @@ state_lock = threading.Lock()
 
 DEFAULT_ROUTING = {
     'ceo': 'openai',
-    'pm': 'deepseek',
+    'pm': 'openrouter',
     'cto': 'openai',
     'developer': 'openai',
-    'designer': 'deepseek',
-    'marketer': 'deepseek',
-    'qa': 'deepseek',
-    'analyst': 'deepseek',
-    'researcher': 'deepseek'
+    'designer': 'openrouter',
+    'marketer': 'github',
+    'qa': 'github',
+    'analyst': 'github',
+    'researcher': 'github'
 }
 
 API_ENDPOINTS = {
