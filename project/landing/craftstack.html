@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CraftStack — виртуальная компания AI-агентов</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#07070d;--bg2:#0d0d1a;--card:rgba(20,20,40,0.6);--text:#e8e8f0;--text2:#8888a0;--text3:#555570;--accent1:#6c5ce7;--accent2:#00cec9;--accent3:#fd79a8;--accent4:#fdcb6e}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px;position:relative}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at center,rgba(108,92,231,0.08) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;background:rgba(0,206,201,0.1);border:1px solid rgba(0,206,201,0.2);font-size:12px;font-weight:500;color:var(--accent2);margin-bottom:24px}
+.hero h1{font-size:64px;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-2px;margin-bottom:16px}
+.hero p{font-size:18px;color:var(--text2);max-width:520px;line-height:1.7;margin-bottom:32px}
+.hero .btn-group{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.hero .btn{padding:14px 32px;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.2s;font-family:'Inter',sans-serif}
+.hero .btn-primary{background:linear-gradient(135deg,var(--accent1),#8b7cf7);color:#fff;box-shadow:0 4px 24px rgba(108,92,231,0.3)}
+.hero .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(108,92,231,0.4)}
+.hero .btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.15)}
+.hero .btn-ghost:hover{background:rgba(255,255,255,0.05)}
+
+/* SECTION */
+.section{padding:80px 20px;max-width:1100px;margin:0 auto}
+.section-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--accent1);margin-bottom:8px}
+.section h2{font-size:36px;font-weight:700;margin-bottom:12px;letter-spacing:-1px}
+.section h2+p{font-size:16px;color:var(--text2);max-width:600px;margin-bottom:40px;line-height:1.6}
+
+/* AGENTS GRID */
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.agent-card{padding:24px;border-radius:14px;background:var(--card);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);transition:all 0.3s}
+.agent-card:hover{transform:translateY(-2px);border-color:rgba(108,92,231,0.2)}
+.agent-card .avatar{font-size:32px;margin-bottom:12px}
+.agent-card h3{font-size:16px;font-weight:600;margin-bottom:4px}
+.agent-card .role{font-size:12px;color:var(--text2);margin-bottom:10px}
+.agent-card .skills{display:flex;flex-wrap:wrap;gap:4px}
+.agent-card .skill{padding:3px 8px;border-radius:5px;font-size:10px;background:rgba(255,255,255,0.05);color:var(--text3);border:1px solid rgba(255,255,255,0.05)}
+
+/* PIPELINE */
+.pipeline{display:flex;gap:0;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:var(--card);overflow:hidden;flex-wrap:wrap}
+.pipe-step{flex:1;padding:20px;text-align:center;min-width:120px;position:relative}
+.pipe-step:not(:last-child)::after{content:'→';position:absolute;right:-6px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:20px}
+.pipe-step .icon{font-size:28px;margin-bottom:8px}
+.pipe-step .name{font-size:13px;font-weight:600}
+.pipe-step .agent{font-size:11px;color:var(--text2);margin-top:4px}
+
+/* PROVIDERS */
+.providers{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.provider{padding:20px;border-radius:12px;background:var(--card);border:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;align-items:center;text-align:center}
+.provider .icon{font-size:28px;margin-bottom:8px}
+.provider .name{font-size:13px;font-weight:600;margin-bottom:4px}
+.provider .desc{font-size:11px;color:var(--text2)}
+.provider .badge-free{padding:2px 8px;border-radius:6px;font-size:9px;font-weight:600;background:rgba(0,184,148,0.15);color:#00b894;margin-top:8px}
+.provider .badge-paid{padding:2px 8px;border-radius:6px;font-size:9px;font-weight:600;background:rgba(253,121,168,0.15);color:var(--accent3);margin-top:8px}
+
+/* FOOTER */
+footer{text-align:center;padding:40px 20px;border-top:1px solid rgba(255,255,255,0.06);color:var(--text3);font-size:13px}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .hero h1{font-size:36px}.hero p{font-size:15px}
+  .section h2{font-size:26px}
+  .pipe-step:not(:last-child)::after{display:none}
+  .pipe-step{flex:1 1 33%}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-badge">⚡ v0.2 · AI Agent Studio</div>
+  <h1>CraftStack</h1>
+  <p>Виртуальная компания AI-агентов. Ставь задачу — команда агентов делает проект от идеи до результата.</p>
+  <div class="btn-group">
+    <a href="#" class="btn btn-primary">🚀 Начать проект</a>
+    <a href="#agents" class="btn btn-ghost">Агенты ↓</a>
+  </div>
+</section>
+
+<section class="section" id="agents">
+  <div class="section-label">👥 Команда</div>
+  <h2>8 AI-агентов</h2>
+  <p>У каждого — свои навыки и зона ответственности. Работают цепочкой, передавая результат друг другу.</p>
+  <div class="agents-grid">
+    <div class="agent-card"><div class="avatar">🏛️</div><h3>CEO</h3><div class="role">Стратегия, бизнес-модель</div><div class="skills"><span class="skill">ideation</span><span class="skill">strategy</span><span class="skill">business model</span></div></div>
+    <div class="agent-card"><div class="avatar">📋</div><h3>PM</h3><div class="role">Задачи, требования</div><div class="skills"><span class="skill">task breakdown</span><span class="skill">sprint</span><span class="skill">spec</span></div></div>
+    <div class="agent-card"><div class="avatar">🔧</div><h3>CTO</h3><div class="role">Архитектура, стек</div><div class="skills"><span class="skill">system design</span><span class="skill">tech stack</span></div></div>
+    <div class="agent-card"><div class="avatar">💻</div><h3>Developer</h3><div class="role">Фулстек, прототипы</div><div class="skills"><span class="skill">frontend</span><span class="skill">backend</span><span class="skill">prototyping</span></div></div>
+    <div class="agent-card"><div class="avatar">🎨</div><h3>Designer</h3><div class="role">UI/UX, визуал</div><div class="skills"><span class="skill">visual design</span><span class="skill">CSS</span><span class="skill">branding</span></div></div>
+    <div class="agent-card"><div class="avatar">📢</div><h3>Marketer</h3><div class="role">Лендинги, GTM</div><div class="skills"><span class="skill">landing</span><span class="skill">copywriting</span></div></div>
+    <div class="agent-card"><div class="avatar">🧪</div><h3>QA</h3><div class="role">Тестирование</div><div class="skills"><span class="skill">testing</span><span class="skill">bug reports</span></div></div>
+    <div class="agent-card"><div class="avatar">💰</div><h3>Analyst</h3><div class="role">Юнит-экономика</div><div class="skills"><span class="skill">kpi</span><span class="skill">forecasts</span></div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">🔧 Pipeline</div>
+  <h2>От идеи до результата</h2>
+  <p>Каждый проект проходит через цепочку агентов. Результат каждого шага — файлы в project/.</p>
+  <div class="pipeline">
+    <div class="pipe-step"><div class="icon">💡</div><div class="name">Идея</div><div class="agent">CEO</div></div>
+    <div class="pipe-step"><div class="icon">📋</div><div class="name">План</div><div class="agent">PM</div></div>
+    <div class="pipe-step"><div class="icon">🔧</div><div class="name">Архитектура</div><div class="agent">CTO</div></div>
+    <div class="pipe-step"><div class="icon">💻</div><div class="name">Разработка</div><div class="agent">Developer</div></div>
+    <div class="pipe-step"><div class="icon">🎨</div><div class="name">Дизайн</div><div class="agent">Designer</div></div>
+    <div class="pipe-step"><div class="icon">🚀</div><div class="name">Запуск</div><div class="agent">Marketer</div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">🔌 Провайдеры</div>
+  <h2>Бесплатные модели</h2>
+  <p>CraftStack работает через любые AI-модели. Бесплатные — основные, платные — опционально.</p>
+  <div class="providers">
+    <div class="provider"><div class="icon">⭐</div><div class="name">DeepSeek V4 Flash</div><div class="desc">Основная модель</div><span class="badge-free">FREE</span></div>
+    <div class="provider"><div class="icon">🔮</div><div class="name">Gemini 2.0 Flash</div><div class="desc">Google free tier</div><span class="badge-free">FREE</span></div>
+    <div class="provider"><div class="icon">🌐</div><div class="name">OpenRouter</div><div class="desc">Multi-model</div><span class="badge-free">FREE</span></div>
+    <div class="provider"><div class="icon">🤖</div><div class="name">OpenAI</div><div class="desc">GPT-4o, o3-mini</div><span class="badge-paid">PAID</span></div>
+    <div class="provider"><div class="icon">🌀</div><div class="name">Anthropic</div><div class="desc">Claude Sonnet, Opus</div><span class="badge-paid">PAID</span></div>
+  </div>
+</section>
+
+<footer>
+  CraftStack — виртуальная компания AI-агентов. Все файлы проекта в открытом доступе.
+</footer>
+
+</body>
+</html>

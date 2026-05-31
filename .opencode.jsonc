@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/opencode.jsonc",
+  "name": "CraftStack",
+  "description": "AI Agent Workbench — от идеи до результата",
+  "modes": {
+    "ceo":       { "slug": "ceo",       "name": "CEO",       "roleDefinition": "file://.opencode/modes/ceo.json" },
+    "pm":        { "slug": "pm",        "name": "PM",        "roleDefinition": "file://.opencode/modes/pm.json" },
+    "cto":       { "slug": "cto",       "name": "CTO",       "roleDefinition": "file://.opencode/modes/cto.json" },
+    "developer": { "slug": "developer", "name": "Developer", "roleDefinition": "file://.opencode/modes/developer.json" },
+    "designer":  { "slug": "designer",  "name": "Designer",  "roleDefinition": "file://.opencode/modes/designer.json" },
+    "marketer":  { "slug": "marketer",  "name": "Marketer",  "roleDefinition": "file://.opencode/modes/marketer.json" },
+    "qa":        { "slug": "qa",        "name": "QA",        "roleDefinition": "file://.opencode/modes/qa.json" },
+    "analyst":   { "slug": "analyst",   "name": "Analyst",   "roleDefinition": "file://.opencode/modes/analyst.json" }
+  }
+}

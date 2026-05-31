@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentBoard — CraftStack</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#07070d;--bg2:#0d0d1a;--card:rgba(20,20,40,0.65);--card-hover:rgba(30,30,55,0.85);
+--card-border:rgba(255,255,255,0.06);--card-border-hover:rgba(108,92,231,0.3);
+--text:#e8e8f0;--text2:#8888a0;--text3:#555570;
+--accent1:#6c5ce7;--accent1-dim:rgba(108,92,231,0.15);--accent2:#00cec9;--accent2-dim:rgba(0,206,201,0.12);
+--accent3:#fd79a8;--accent4:#fdcb6e;--accent5:#a29bfe;
+--green:#00b894;--green-dim:rgba(0,184,148,0.15);--orange:#fdcb6e;--orange-dim:rgba(253,203,110,0.12);
+--red:#d63031;--red-dim:rgba(214,48,49,0.12);--radius:10px;--radius-lg:14px;
+--shadow:0 4px 24px rgba(0,0,0,0.3);
+}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.app{max-width:1100px;margin:0 auto;padding:20px;position:relative;z-index:1}
+
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 0 20px;border-bottom:1px solid var(--card-border);margin-bottom:24px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff}
+.logo h1{font-size:18px;font-weight:700;letter-spacing:-0.5px}
+.hdr-links{display:flex;gap:8px}
+.hdr-links a{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:500;color:var(--text2);text-decoration:none;border:1px solid var(--card-border);transition:all 0.15s}
+.hdr-links a:hover{background:var(--card);color:var(--text);border-color:var(--card-border-hover)}
+
+.mode-bar{display:flex;gap:8px;margin-bottom:16px;align-items:center}
+.mode-bar .mode-btn{padding:7px 16px;border-radius:8px;border:1px solid var(--card-border);font-family:Inter,sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;background:var(--card);color:var(--text2)}
+.mode-bar .mode-btn:hover{border-color:var(--card-border-hover)}
+.mode-bar .mode-btn.on{background:var(--green-dim);border-color:rgba(0,184,148,0.25);color:var(--green)}
+.mode-bar .mode-btn.off{background:var(--accent1-dim);border-color:rgba(108,92,231,0.25);color:var(--accent5)}
+.mode-bar .mode-hint{font-size:10px;color:var(--text3);margin-left:8px}
+
+.search-wrap{margin-bottom:16px;display:flex;gap:8px}
+.search-wrap input{flex:1;padding:12px 16px;border-radius:var(--radius);border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border 0.15s}
+.search-wrap input:focus{border-color:var(--accent1)}
+.search-wrap input::placeholder{color:var(--text3)}
+.search-wrap button{padding:12px 18px;border-radius:10px;border:1px solid var(--card-border);background:var(--card);color:var(--accent5);font-family:Inter,sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s}
+.search-wrap button:hover{background:var(--accent1-dim)}
+
+.stats{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.stat-card{padding:14px 18px;border-radius:var(--radius);border:1px solid var(--card-border);background:var(--card);flex:1;min-width:140px}
+.stat-card .num{font-size:22px;font-weight:700;color:var(--accent5)}
+.stat-card .lbl{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
+
+.agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.acard{padding:16px;border-radius:var(--radius-lg);border:1px solid var(--card-border);background:var(--card);transition:all 0.2s}
+.acard:hover{border-color:var(--card-border-hover);background:var(--card-hover)}
+.acard .top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.acard .icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.acard .info{flex:1;min-width:0}
+.acard .info .name{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.acard .info .name .slug{font-size:10px;color:var(--text3);font-weight:400}
+.acard .info .role{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.4}
+.acard .info .status-row{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.acard .info .status-row .sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.acard .info .status-row .sprov{font-size:10px;color:var(--text3);padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.04);border:1px solid var(--card-border);display:none}
+.acard .info .status-row .sprov.show{display:inline-block}
+
+.skills-wrap{margin-bottom:10px}
+.skills-wrap .sk-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.skills-wrap .sk-hdr span{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px}
+.skills-wrap .sk-hdr button{padding:2px 8px;border-radius:4px;border:1px solid var(--card-border);background:transparent;color:var(--accent2);font-size:9px;cursor:pointer;font-family:Inter,sans-serif;transition:all 0.15s}
+.skills-wrap .sk-hdr button:hover{background:var(--accent2-dim)}
+.skills-wrap .sk-list{display:flex;flex-wrap:wrap;gap:3px}
+.skills-wrap .sk-list .sk-tag{padding:2px 7px;border-radius:4px;font-size:9px;background:rgba(255,255,255,0.04);color:var(--text2);border:1px solid rgba(255,255,255,0.06)}
+
+.prov-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.prov-row label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px}
+.prov-row .prov-display{flex:1;font-size:11px;color:var(--text2);padding:5px 8px;border-radius:6px;background:rgba(255,255,255,0.03)}
+.prov-row .prov-display .auto-badge{font-size:9px;color:var(--accent2);margin-left:6px;font-weight:500}
+.prov-row select{flex:1;padding:5px 8px;border-radius:6px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-family:Inter,sans-serif;font-size:11px;outline:none}
+.prov-row select:focus{border-color:var(--accent1)}
+.prov-row select option{background:var(--bg);color:var(--text)}
+
+.actions{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--card-border);padding-top:10px}
+.actions .act-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--card-border);background:transparent;color:var(--text2);font-family:Inter,sans-serif;font-size:10px;font-weight:500;cursor:pointer;transition:all 0.15s}
+.actions .act-btn:hover{background:var(--accent1-dim);color:var(--accent5);border-color:rgba(162,155,254,0.2)}
+.actions .act-btn.act-del:hover{background:var(--red-dim);color:var(--red);border-color:rgba(214,48,49,0.25)}
+
+.result-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;border:1px solid var(--card-border);background:transparent;color:var(--accent2);font-size:10px;cursor:pointer;font-family:Inter,sans-serif;transition:all 0.15s}
+.result-btn:hover{background:var(--accent2-dim)}
+
+.footer{text-align:center;padding:30px 0 10px;font-size:10px;color:var(--text3);border-top:1px solid var(--card-border);margin-top:30px}
+
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:999;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:24px;max-width:600px;width:90%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.modal h3{font-size:14px;font-weight:600;margin-bottom:12px}
+.modal .modal-body{flex:1;overflow-y:auto;font-size:12px;color:var(--text2);line-height:1.6}
+.modal .modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end;flex-shrink:0}
+.modal .modal-actions button{padding:8px 18px;border-radius:8px;border:none;font-family:Inter,sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.modal textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:120px}
+
+@media(max-width:700px){
+.agents{grid-template-columns:1fr}
+.stats{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="app">
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">A</div>
+    <div><h1>AgentBoard</h1></div>
+  </div>
+  <div class="hdr-links">
+    <a href="dashboard.html">⬅ Dashboard</a>
+    <a href="providers.html">🔌 Providers</a>
+  </div>
+</header>
+
+<div class="mode-bar">
+  <button class="mode-btn" id="modeAutoBtn" onclick="setAgentMode('auto')">⟳ Авто</button>
+  <button class="mode-btn" id="modeManualBtn" onclick="setAgentMode('manual')">✋ Ручной</button>
+  <span class="mode-hint" id="modeHint">Авто: провайдера назначает роутер</span>
+</div>
+
+<div class="search-wrap">
+  <input id="searchInput" type="text" placeholder="🔍 Поиск агента..." oninput="renderAgents()" style="flex:1">
+  <button onclick="showAddAgent()">➕</button>
+  <button onclick="refreshAll()">🔄</button>
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="num" id="totalCount">0</div><div class="lbl">Агентов</div></div>
+  <div class="stat-card"><div class="num" id="activeCount">0</div><div class="lbl">Работали</div></div>
+  <div class="stat-card"><div class="num" id="doneCount">0</div><div class="lbl">Готово</div></div>
+</div>
+
+<div class="agents" id="agentList"></div>
+
+<div class="footer">© 2026 Sergey Kornilov · CraftStack AgentBoard</div>
+</div>
+
+<!-- SKILLS MODAL -->
+<div class="modal-overlay" id="skillsModal">
+  <div class="modal">
+    <h3>🛠 Навыки агента: <span id="skAgentName"></span></h3>
+    <div class="modal-body">
+      <p style="font-size:10px;color:var(--text3);margin-bottom:8px">roleDefinition из mode-файла. Сохраняется на сервер.</p>
+      <textarea id="skTextarea"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeSkillsModal()" style="background:transparent;color:var(--text2);border:1px solid var(--card-border)">Отмена</button>
+      <button onclick="saveSkills()" style="background:var(--accent1);color:#fff">💾 Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT MODAL -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal" style="max-width:700px">
+    <h3><span id="rmAgentName"></span></h3>
+    <div class="modal-body" id="rmBody" style="white-space:pre-wrap;word-break:break-word;font-size:11px"></div>
+    <div class="modal-actions">
+      <button id="rmOpenFile" style="background:transparent;color:var(--accent2);border:1px solid var(--card-border)">📂 Открыть файл</button>
+      <button onclick="closeResultModal()" style="background:transparent;color:var(--text2);border:1px solid var(--card-border)">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───
+const BUILTIN_AGENTS = [
+  {id:'ceo', em:'🏛️', name:'CEO', role:'Стратегия, бизнес-модель, план'},
+  {id:'pm', em:'📋', name:'PM', role:'Задачи, требования, спринты'},
+  {id:'cto', em:'🔧', name:'CTO', role:'Архитектура, выбор стека'},
+  {id:'developer', em:'💻', name:'Developer', role:'Фулстек, прототипы, код'},
+  {id:'designer', em:'🎨', name:'Designer', role:'UI/UX, визуал, брендинг'},
+  {id:'marketer', em:'📢', name:'Marketer', role:'Лендинги, копирайтинг, GTM'},
+  {id:'qa', em:'🧪', name:'QA', role:'Тесты, баги, качество'},
+  {id:'analyst', em:'💰', name:'Analyst', role:'Юнит-экономика, метрики'}
+];
+
+const PROV_LABEL = {deepseek:'⭐DS',openai:'🤖GPT',gemini:'🔮GM',mistral:'🌬️MS',openrouter:'🌐OR',github:'🐙GH',anthropic:'🌀CL',xai:'✖️XA',groq:'⚡GQ',together:'🔥TO',perplexity:'💎PP'};
+
+// ─── STATE ───
+let agentMode = localStorage.getItem('ab_agent_mode') || 'auto'; // 'auto' | 'manual'
+let providerList = []; // from server (only with keys)
+let agentResults = {};
+let agentRouting = {};
+let agentStatus = {};
+let agentModes = {};
+
+// ─── PROVIDER LIST ───
+async function fetchProviderList(){
+  // Also read from localStorage (keys saved by providers.html)
+  let keyed = [];
+  try{ const k = JSON.parse(localStorage.getItem('ph_keys')||'{}'); keyed = Object.keys(k).filter(pid => k[pid]); }catch(e){}
+  // Merge with server
+  try{
+    const r = await fetch('/api/providers/list');
+    const d = await r.json();
+    if(d.providers){
+      d.providers.forEach(p => { if(!keyed.includes(p.id)) keyed.push(p.id); });
+    }
+  }catch(e){}
+  // Exclude hidden
+  let hidden = [];
+  try{ hidden = JSON.parse(localStorage.getItem('ph_hidden')||'[]'); }catch(e){}
+  providerList = keyed.filter(p => !hidden.includes(p));
+  // If none, show all as fallback
+  if(!providerList.length) providerList = ['deepseek','openai','gemini','mistral','openrouter','github','anthropic','xai','groq','together','perplexity'];
+  renderAgents();
+}
+
+// ─── DATA FETCH ───
+async function fetchAgentResults(){
+  try{ const r = await fetch('/api/agent-results'); agentResults = await r.json(); }catch(e){}
+  renderAgents();
+}
+async function fetchRouting(){
+  try{ const r = await fetch('/api/routing'); agentRouting = await r.json(); }catch(e){}
+  renderAgents();
+}
+async function fetchState(){
+  try{
+    const r = await fetch('/api/state');
+    const s = await r.json();
+    if(s.progress) agentStatus = s.progress;
+    renderAgents();
+  }catch(e){}
+}
+async function fetchMode(slug){
+  try{ const r = await fetch('/api/agent-mode/'+slug); if(r.ok) agentModes[slug] = await r.json(); }catch(e){}
+}
+async function fetchAllModes(){
+  for(const a of BUILTIN_AGENTS){ await fetchMode(a.id); }
+  renderAgents();
+}
+
+function getCustomAgents(){
+  try{ return JSON.parse(localStorage.getItem('ab_custom') || '[]'); }catch(e){ return []; }
+}
+function saveCustomAgents(list){
+  localStorage.setItem('ab_custom', JSON.stringify(list));
+}
+
+// ─── SKILLS FROM MODE ───
+function getAgentSkills(slug, isCustom){
+  if(isCustom) return [];
+  const mode = agentModes[slug];
+  if(mode && mode.roleDefinition){
+    const def = mode.roleDefinition;
+    const skills = [];
+    const m = def.match(/навыки:\s*([^.]+)/i) || def.match(/skills:\s*([^.]+)/i);
+    if(m) skills.push(...m[1].split(',').map(s=>s.trim().replace(/^[:\s]+/,'')).filter(Boolean));
+    if(!skills.length){
+      const words = def.split(/[\s,]+/).filter(w => w.length > 3 &&
+        !['твоя','твой','твои','задача','прочитать','затем','создавай','весь','должен','быть','пиши','код','для'].includes(w.toLowerCase())).slice(0,5);
+      skills.push(...words);
+    }
+    return skills.slice(0,6);
+  }
+  const fallback = {ceo:['strategy','business model','pitch','synthesis'],pm:['requirements','sprint','spec','orchestration'],cto:['system design','tech stack','infrastructure'],developer:['frontend','backend','api','prototyping'],designer:['visual design','branding','responsive'],marketer:['copywriting','gtm','seo','landing page'],qa:['testing','bug reports','e2e','performance'],analyst:['unit economics','forecasts','kpi','report']};
+  return fallback[slug] || [];
+}
+
+function getAllAgents(){
+  const builtin = BUILTIN_AGENTS.map(a => ({...a, isCustom: false}));
+  const custom = getCustomAgents().map(c => ({id:c.id, em:c.em||'🔌', name:c.name, role:c.role||'', isCustom: true}));
+  return [...builtin, ...custom];
+}
+
+function getActualProvider(slug){
+  // In auto mode: return the provider actually used (from status), or null
+  const st = agentStatus[slug];
+  if(st && st.provider) return st.provider;
+  // In manual mode: return from routing
+  const r = agentRouting[slug];
+  return (r && r.provider) || null;
+}
+
+function getManualProvider(slug){
+  const r = agentRouting[slug];
+  return (r && r.provider) || null;
+}
+
+// ─── RENDER ───
+function renderAgents(){
+  // Update mode bar
+  document.getElementById('modeAutoBtn').className = 'mode-btn' + (agentMode==='auto'?' on':'');
+  document.getElementById('modeManualBtn').className = 'mode-btn' + (agentMode==='manual'?' off':'');
+  document.getElementById('modeHint').textContent = agentMode==='auto' ? 'Авто: провайдера назначает роутер' : 'Ручной: выбери провайдера для каждого агента';
+
+  const el = document.getElementById('agentList'); el.innerHTML = '';
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const all = getAllAgents();
+  let total = 0, active = 0, done = 0;
+
+  all.forEach(a => {
+    if(q && !a.name.toLowerCase().includes(q) && !a.role.toLowerCase().includes(q)) return;
+    total++;
+    const st = getActualProvider(a.id);
+    const actualProv = agentMode==='auto' ? st : null;
+    const manualProv = getManualProvider(a.id);
+    const result = getResult(a.id);
+    const hasResult = result && result.content && result.content.trim();
+    const skills = getAgentSkills(a.id, a.isCustom);
+
+    // Status
+    const s = agentStatus[a.id];
+    let sdot = '#555570', slabel = 'Ожидает', sdur = '', showProv = false;
+    if(s){
+      if(s.status==='done'){ sdot='#00b894'; slabel='✅ Выполнен'; sdur=s.duration; showProv=true; }
+      else if(s.status==='running'){ sdot='#fdcb6e'; slabel='⟳'; showProv=true; }
+      else if(s.status==='error'){ sdot='#d63031'; slabel='❌ Ошибка'; showProv=true; }
+    }
+    if(slabel==='✅ Выполнен') done++;
+    if(slabel!=='Ожидает') active++;
+
+    // Provider display
+    let provHtml = '';
+    if(agentMode==='auto'){
+      const shown = actualProv || '';
+      provHtml = `<div class="prov-display">${shown ? PROV_LABEL[shown]||shown.toUpperCase() : '—'}<span class="auto-badge">⟳ авто</span></div>`;
+    } else {
+      provHtml = `<select id="prov-${a.id}" onchange="setManualProvider('${a.id}', this.value)">
+        <option value="">— авто (роутер)</option>
+        ${providerList.map(p => '<option value="'+p+'"'+(manualProv===p?' selected':'')+'>'+(PROV_LABEL[p]||p.toUpperCase())+' '+p+'</option>').join('')}
+      </select>`;
+    }
+
+    const d = document.createElement('div');
+    d.className = 'acard';
+    d.innerHTML = `
+      <div class="top">
+        <div class="icon" style="background:rgba(108,92,231,0.12)">${a.em}</div>
+        <div class="info">
+          <div class="name">${a.name} <span class="slug">${a.isCustom?'🔌 custom':'@'+a.id}</span></div>
+          <div class="role">${a.role}</div>
+          <div class="status-row">
+            <span class="sdot" style="background:${sdot};box-shadow:0 0 4px ${sdot}66"></span>
+            <span style="font-size:10px;color:${sdot}">${slabel}</span>
+            ${sdur ? '<span style="font-size:10px;color:var(--text3)">⏱ '+sdur+'</span>' : ''}
+            <span class="sprov${showProv&&actualProv?' show':''}">${actualProv ? (PROV_LABEL[actualProv]||actualProv.toUpperCase()) : ''}</span>
+          </div>
+        </div>
+      </div>
+      <div class="skills-wrap" style="${a.isCustom?'display:none':''}">
+        <div class="sk-hdr">
+          <span>🛠 Навыки</span>
+          <button onclick="editSkills('${a.id}')">✎ ред.</button>
+        </div>
+        <div class="sk-list">${skills.map(s => '<span class="sk-tag">'+escHtml(s)+'</span>').join('')}</div>
+      </div>
+      <div class="prov-row">
+        <label>🔌 Провайдер</label>
+        ${provHtml}
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:${hasResult?'6':'0'}px;flex-wrap:wrap">
+        ${hasResult ? `
+          <button class="result-btn" onclick="showResult('${a.id}')">📄 Результат</button>
+          <button class="result-btn" onclick="openResultFile('${a.id}')">📂 Файл</button>
+        ` : ''}
+      </div>
+      <div class="actions">
+        ${a.isCustom ? `<button class="act-btn act-del" onclick="deleteCustom('${a.id}')">🗑️ Удалить</button>` : ''}
+      </div>`;
+    el.appendChild(d);
+  });
+
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('activeCount').textContent = active;
+  document.getElementById('doneCount').textContent = done;
+}
+
+function getResult(slug){
+  return agentResults[slug] || null;
+}
+
+// ─── MODE ───
+function setAgentMode(mode){
+  agentMode = mode;
+  localStorage.setItem('ab_agent_mode', mode);
+  renderAgents();
+}
+
+// ─── PROVIDER (MANUAL) ───
+function setManualProvider(slug, provider){
+  const r = agentRouting[slug] || {};
+  if(provider) r.provider = provider;
+  else delete r.provider;
+  agentRouting[slug] = r;
+  fetch('/api/routing', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({routing: {[slug]: r}})
+  }).catch(()=>{});
+}
+
+// ─── CUSTOM ───
+function deleteCustom(id){
+  if(!confirm('Удалить кастомного агента «'+id+'»?')) return;
+  saveCustomAgents(getCustomAgents().filter(x => x.id !== id));
+  renderAgents();
+}
+
+// ─── SKILLS ───
+let _editingSlug = null;
+function editSkills(slug){
+  const a = getAllAgents().find(x => x.id === slug);
+  if(!a) return;
+  _editingSlug = slug;
+  document.getElementById('skAgentName').textContent = a.name;
+  document.getElementById('skTextarea').value = (agentModes[slug] && agentModes[slug].roleDefinition) || a.role || '';
+  document.getElementById('skillsModal').classList.add('show');
+}
+function closeSkillsModal(){ document.getElementById('skillsModal').classList.remove('show'); _editingSlug = null; }
+function saveSkills(){
+  const slug = _editingSlug, text = document.getElementById('skTextarea').value.trim();
+  if(!slug || !text){ closeSkillsModal(); return; }
+  fetch('/api/agent-mode/'+slug, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({roleDefinition: text})})
+    .then(r => { if(r.ok){ fetchMode(slug); alert('✅ Сохранено'); } else alert('❌ Ошибка'); })
+    .catch(() => alert('❌ Ошибка сервера'));
+  closeSkillsModal();
+}
+
+// ─── RESULT ───
+function showResult(slug){
+  const r = agentResults[slug];
+  if(!r){ alert('Нет результата'); return; }
+  const a = BUILTIN_AGENTS.find(x => x.id === slug);
+  document.getElementById('rmAgentName').textContent = (a?a.name:slug)+' — результат';
+  document.getElementById('rmBody').textContent = r.content;
+  document.getElementById('rmOpenFile').onclick = function(){ openResultFile(slug); };
+  document.getElementById('resultModal').classList.add('show');
+}
+function closeResultModal(){ document.getElementById('resultModal').classList.remove('show'); }
+function openResultFile(slug){
+  const r = agentResults[slug];
+  if(r && r.file) window.open('project/'+slug+'/'+r.file, '_blank');
+}
+
+// ─── ADD CUSTOM ───
+function showAddAgent(){
+  const html = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center" id="addModal" onclick="if(event.target===this)closeAddAgent()"><div style="background:var(--bg2);padding:24px;border-radius:14px;border:1px solid var(--card-border);width:420px;max-width:90vw"><div style="font-size:16px;font-weight:700;margin-bottom:16px">➕ Новый агент</div><div style="display:flex;flex-direction:column;gap:10px"><input id="caName" placeholder="Название (напр. SMM Manager)" style="padding:10px 14px;border-radius:8px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-size:13px;outline:none;font-family:Inter,sans-serif"><input id="caEmoji" placeholder="Эмодзи (напр. 📱)" style="padding:10px 14px;border-radius:8px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-size:13px;outline:none;font-family:Inter,sans-serif" maxlength="2"><textarea id="caRole" placeholder="Описание роли" style="padding:10px 14px;border-radius:8px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-size:13px;outline:none;font-family:Inter,sans-serif;resize:vertical;min-height:60px"></textarea><button onclick="addCustomAgent()" style="padding:10px;border-radius:8px;border:none;background:var(--accent1);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif">➕ Добавить</button><button onclick="closeAddAgent()" style="padding:8px;border-radius:8px;border:1px solid var(--card-border);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;font-family:Inter,sans-serif">Отмена</button></div></div></div>';
+  const div = document.createElement('div'); div.innerHTML = html; document.body.appendChild(div.firstElementChild);
+}
+function closeAddAgent(){ const el = document.getElementById('addModal'); if(el) el.remove(); }
+function addCustomAgent(){
+  const name = document.getElementById('caName').value.trim(), emoji = document.getElementById('caEmoji').value.trim()||'🔌', role = document.getElementById('caRole').value.trim();
+  if(!name||!role){ alert('Заполни название и описание'); return; }
+  const list = getCustomAgents(); list.push({id:'custom-'+Date.now(), name, em: emoji, role, skills:[]});
+  saveCustomAgents(list); closeAddAgent(); renderAgents();
+}
+
+function refreshAll(){ fetchProviderList(); fetchAgentResults(); fetchRouting(); fetchState(); fetchAllModes(); }
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ─── PARTICLES ───
+const cnv = document.getElementById('bg'), ctx = cnv.getContext('2d');
+let parts=[];
+function rs(){cnv.width=window.innerWidth;cnv.height=window.innerHeight}
+window.addEventListener('resize',rs); rs();
+for(let i=0;i<40;i++) parts.push({x:Math.random()*cnv.width,y:Math.random()*cnv.height,r:Math.random()*2+0.5,dx:(Math.random()-0.5)*0.25,dy:(Math.random()-0.5)*0.25,o:Math.random()*0.4+0.1});
+function anim(){ctx.clearRect(0,0,cnv.width,cnv.height);parts.forEach(p=>{p.x+=p.dx;p.y+=p.dy;if(p.x<0)p.x=cnv.width;if(p.x>cnv.width)p.x=0;if(p.y<0)p.y=cnv.height;if(p.y>cnv.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(108,92,231,'+p.o+')';ctx.fill()});requestAnimationFrame(anim)}
+anim();
+
+// ─── INIT ───
+fetchProviderList();
+fetchAgentResults();
+fetchRouting();
+fetchState();
+fetchAllModes();
+setInterval(fetchAgentResults, 2000);
+setInterval(fetchState, 2000);
+</script>
+</body>
+</html>

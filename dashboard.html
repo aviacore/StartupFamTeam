@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CraftStack — v0.3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#07070d;--bg2:#0d0d1a;--card:rgba(20,20,40,0.65);--card-hover:rgba(30,30,55,0.85);
+--card-border:rgba(255,255,255,0.06);--card-border-hover:rgba(108,92,231,0.3);
+--text:#e8e8f0;--text2:#8888a0;--text3:#555570;
+--accent1:#6c5ce7;--accent1-dim:rgba(108,92,231,0.15);--accent2:#00cec9;--accent2-dim:rgba(0,206,201,0.12);
+--accent3:#fd79a8;--accent4:#fdcb6e;--accent5:#a29bfe;
+--green:#00b894;--green-dim:rgba(0,184,148,0.15);--orange:#fdcb6e;--orange-dim:rgba(253,203,110,0.12);
+--red:#d63031;--red-dim:rgba(214,48,49,0.12);--radius:10px;--radius-lg:14px;
+--shadow:0 4px 24px rgba(0,0,0,0.3);
+}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.app{display:flex;flex-direction:column;height:100vh;position:relative;z-index:1}
+
+/* HEADER */
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:1px solid var(--card-border);flex-shrink:0;background:rgba(7,7,13,0.85);backdrop-filter:blur(16px)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff}
+.logo h1{font-size:15px;font-weight:700;letter-spacing:-0.3px}
+.logo .ver{font-size:10px;color:var(--text3);margin-left:3px}
+.hdr-center{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text2)}
+.hdr-center strong{color:var(--text);font-weight:600}
+.hdr-center .sep{color:var(--text3)}
+.status-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500}
+.status-badge.online{background:var(--green-dim);border:1px solid rgba(0,184,148,0.25);color:var(--green)}
+.status-badge.offline{background:var(--red-dim);border:1px solid rgba(214,48,49,0.25);color:var(--red)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.status-dot.offline{background:var(--red);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* MAIN LAYOUT */
+.main{display:flex;flex:1;overflow:hidden}
+
+/* LEFT: AGENTS */
+.col-agents{width:240px;min-width:240px;border-right:1px solid var(--card-border);display:flex;flex-direction:column;overflow:hidden}
+.col-agents .ph{padding:12px 14px 10px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);border-bottom:1px solid var(--card-border);display:flex;justify-content:space-between;align-items:center}
+.col-agents .ph .cnt{font-size:10px;color:var(--text2);font-weight:400;letter-spacing:0}
+.agent-list{flex:1;overflow-y:auto;padding:6px}
+.agent-list::-webkit-scrollbar{width:3px}
+.agent-list::-webkit-scrollbar-thumb{background:var(--text3);border-radius:3px}
+.agent-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;transition:all 0.15s;user-select:none;border:1px solid transparent;margin-bottom:2px}
+.agent-item:hover{background:var(--card);border-color:var(--card-border)}
+.agent-item.on{border-color:var(--card-border-hover)}
+.agent-item .chk{width:17px;height:17px;border-radius:4px;border:2px solid var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;font-size:9px;color:transparent}
+.agent-item.on .chk{background:var(--accent1);border-color:var(--accent1);color:#fff}
+.agent-item .av{font-size:16px;flex-shrink:0}
+.agent-item .inf{flex:1;min-width:0}
+.agent-item .inf .nm{font-size:12px;font-weight:600}
+.agent-item .inf .rl{font-size:10px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agent-item .md-badge{font-size:9px;padding:2px 6px;border-radius:5px;background:var(--card);color:var(--text3);border:1px solid var(--card-border);flex-shrink:0}
+.agent-item.on .md-badge{background:var(--accent1-dim);color:var(--accent5);border-color:rgba(162,155,254,0.2)}
+.agent-item .pr-badge{font-size:8px;padding:1px 5px;border-radius:4px;background:var(--accent1-dim);color:var(--accent5);border:1px solid rgba(162,155,254,0.2);flex-shrink:0;user-select:none}
+.agent-item .sk{display:none;flex-wrap:wrap;gap:2px;margin-top:5px;padding-left:26px}
+.agent-item.show-sk .sk{display:flex}
+.sk-tag{padding:1px 6px;border-radius:4px;font-size:9px;background:rgba(255,255,255,0.04);color:var(--text3);border:1px solid rgba(255,255,255,0.05)}
+.spec-bar{display:flex;gap:4px;padding:8px 12px;border-top:1px solid var(--card-border);flex-wrap:wrap}
+.spec-pill{padding:4px 11px;border-radius:20px;font-size:10px;font-weight:500;border:1px solid var(--card-border);cursor:pointer;transition:all 0.15s;background:transparent;color:var(--text2);font-family:'Inter',sans-serif}
+.spec-pill:hover{border-color:var(--accent1);color:var(--accent5)}
+.spec-pill.on{background:var(--accent1-dim);border-color:rgba(162,155,254,0.3);color:var(--accent5)}
+
+/* CENTER: TASK */
+.col-task{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;min-width:0}
+.col-task .ph{padding:12px 18px 10px;border-bottom:1px solid var(--card-border);display:flex;justify-content:space-between;align-items:center}
+.col-task .ph .tt{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.col-task .ph .tt small{font-size:10px;color:var(--text2);font-weight:400}
+.ti{padding:12px 18px;border-bottom:1px solid var(--card-border)}
+.ti textarea{width:100%;min-height:64px;max-height:120px;padding:12px;border-radius:var(--radius);border:1px solid var(--accent1);background:rgba(0,0,0,0.3);color:var(--text);font-family:'Inter',sans-serif;font-size:12px;line-height:1.5;resize:vertical;outline:none;transition:border 0.15s}
+.ti textarea:focus{border-color:var(--accent1)}
+.ti textarea::placeholder{color:var(--text3)}
+.ti-act{display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap}
+.ti-act .btn{padding:7px 16px;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-p{background:linear-gradient(135deg,var(--accent1),#8b7cf7);color:#fff}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--glow)}
+.btn-p:disabled{opacity:0.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-g{background:transparent;color:var(--text2);border:1px solid var(--card-border)}
+.btn-g:hover{background:var(--card);color:var(--text)}
+.ti-act select{padding:6px 10px;border-radius:8px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-family:'Inter',sans-serif;font-size:11px;outline:none;max-width:160px}
+.ti-act select option{background:var(--bg);color:var(--text)}
+
+/* KANBAN */
+.kanban-wrap{flex:1;overflow:hidden;display:flex;gap:0;padding:0}
+.kanban-col{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--card-border)}
+.kanban-col:last-child{border-right:none}
+.kanban-col .kh{padding:10px 14px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--card-border)}
+.kanban-col .kh .kcnt{font-size:10px;color:var(--text2);font-weight:400;letter-spacing:0}
+.kanban-body{flex:1;overflow-y:auto;padding:6px}
+.kanban-body::-webkit-scrollbar{width:3px}
+.kanban-body::-webkit-scrollbar-thumb{background:var(--text3);border-radius:3px}
+.ticket{padding:10px 12px;border-radius:var(--radius);margin-bottom:5px;border:1px solid var(--card-border);background:var(--card);cursor:default;transition:all 0.15s}
+.ticket:hover{border-color:var(--card-border-hover)}
+.ticket .t-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.ticket .t-hdr .t-title{font-size:11px;font-weight:600;line-height:1.3}
+.ticket .t-hdr .t-agent{font-size:9px;padding:2px 6px;border-radius:4px;background:var(--accent1-dim);color:var(--accent5);flex-shrink:0;margin-left:6px}
+.ticket .t-desc{font-size:10px;color:var(--text2);line-height:1.4;margin-bottom:6px}
+.ticket .t-foot{display:flex;justify-content:space-between;align-items:center}
+.ticket .t-files{font-size:9px;color:var(--text3)}
+.ticket .t-files code{color:var(--accent2);background:rgba(0,206,201,0.08);padding:1px 4px;border-radius:3px}
+.ticket .t-del{cursor:pointer;font-size:11px;color:var(--text3);padding:2px;border-radius:4px;line-height:1}
+.ticket .t-del:hover{color:var(--red);background:var(--red-dim)}
+.ticket-placeholder{text-align:center;padding:20px 10px;color:var(--text3);font-size:10px;line-height:1.6}
+
+/* RIGHT: MODELS (compact health dots) */
+.col-models{width:180px;min-width:180px;border-left:1px solid var(--card-border);display:flex;flex-direction:column;overflow:hidden}
+.col-models .ph{padding:10px 14px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);border-bottom:1px solid var(--card-border);display:flex;justify-content:space-between;align-items:center}
+.col-models .ph a{font-weight:400;color:var(--accent2);text-decoration:none;font-size:9px;letter-spacing:0}
+.col-models .ph a:hover{text-decoration:underline}
+.models-list{flex:1;overflow-y:auto;padding:8px 10px}
+.models-list::-webkit-scrollbar{width:3px}
+.models-list::-webkit-scrollbar-thumb{background:var(--text3);border-radius:3px}
+.health-card{padding:6px 8px;border-radius:8px;margin-bottom:4px;border:1px solid var(--card-border);background:var(--card);display:flex;align-items:center;gap:8px;transition:all 0.1s}
+.health-card:hover{border-color:var(--card-border-hover)}
+.health-card .hdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.health-card .hem{font-size:12px;flex-shrink:0}
+.health-card .hnm{font-size:10px;font-weight:500;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* PAID */
+.paid-section{border-top:1px solid var(--card-border)}
+.paid-toggle{padding:10px 14px;font-size:10px;font-weight:500;color:var(--text3);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color 0.15s;user-select:none}
+.paid-toggle:hover{color:var(--text2)}
+.paid-toggle .arrow{transition:transform 0.2s;font-size:10px}
+.paid-toggle.open .arrow{transform:rotate(90deg)}
+.paid-body{display:none;padding:4px 8px 8px}
+.paid-body.open{display:block}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:24px;max-width:420px;width:90%;box-shadow:var(--shadow)}
+.modal h3{font-size:14px;font-weight:600;margin-bottom:12px}
+.modal .modal-body{font-size:12px;color:var(--text2);line-height:1.6}
+.modal .modal-body .stat-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--card-border)}
+.modal .modal-body .stat-row:last-child{border-bottom:none}
+.modal .modal-close{margin-top:16px;text-align:right}
+.modal .modal-close .btn{padding:7px 18px;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.col-models{width:220px;min-width:220px}}
+@media(max-width:900px){
+  .main{flex-direction:column}
+  .col-agents{width:100%;min-width:0;max-height:160px;border-right:none;border-bottom:1px solid var(--card-border)}
+  .col-models{width:100%;min-width:0;max-height:200px;border-left:none;border-top:1px solid var(--card-border)}
+}
+@media(max-width:500px){
+}
+/* Chat pulse when waiting for answer */
+.chat-waiting { border-color: rgba(253,203,110,0.5) !important; box-shadow: 0 0 12px rgba(253,203,110,0.15); }
+.chat-waiting > div:first-child { background: rgba(253,203,110,0.1) !important; }
+@keyframes chatPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.chat-waiting #chatPending { animation: chatPulse 1.2s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="app">
+
+<header style="padding:8px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--card-border);flex-shrink:0;background:rgba(7,7,13,0.85);backdrop-filter:blur(16px)">
+  <div style="display:flex;align-items:center;gap:16px">
+    <!-- CraftStack logo -->
+    <div style="display:flex;align-items:center;gap:6px">
+      <span style="font-size:16px;font-weight:800;background:linear-gradient(135deg,#6c5ce7,#00cec9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px">CraftStack</span>
+    </div>
+    <span style="color:var(--card-border);font-size:16px;font-weight:100">|</span>
+    <!-- Version (кликабельно) -->
+    <span onclick="changeVersion()" style="padding:3px 10px;border-radius:5px;background:var(--accent1-dim);color:var(--accent5);font-size:10px;font-weight:600;cursor:pointer;transition:all 0.15s" title="Сменить версию" id="verBadge">v0.3</span>
+    <!-- Founder (имя кликабельно) -->
+    <div style="display:flex;align-items:center;gap:6px;cursor:pointer" onclick="changeName()" title="Сменить имя">
+      <span style="font-size:18px">👑</span>
+      <div>
+        <div style="font-size:11px;font-weight:700;line-height:1.2"><span id="founderName">Сергей</span></div>
+        <div style="font-size:8px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:0.3px">Founder</div>
+      </div>
+    </div>
+    <span style="color:var(--card-border);font-size:16px;font-weight:100">|</span>
+    <!-- OpenCode -->
+    <div style="display:flex;align-items:center;gap:6px">
+      <span style="font-size:16px;font-weight:300;color:var(--accent2)">◇</span>
+      <div>
+        <div style="font-size:11px;font-weight:700;line-height:1.2">OpenCode</div>
+        <div style="font-size:8px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:0.3px">Assistant</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <!-- Language toggle -->
+    <span id="langBtn" onclick="toggleLang()" style="padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;background:rgba(255,255,255,0.04);color:var(--text2);border:1px solid var(--card-border);user-select:none">🇬🇧 EN</span>
+    <!-- Strategy toggle -->
+    <label style="display:flex;align-items:center;gap:5px;padding:4px 12px;border-radius:8px;border:1px solid var(--card-border);font-size:10px;font-weight:500;cursor:pointer;user-select:none;transition:all 0.15s;background:transparent;color:var(--text2)" onclick="event.target.tagName!=='INPUT'&&document.getElementById('strategyToggle').click()">
+      <input type="checkbox" id="strategyToggle" onchange="toggleStrategy(this.checked)" style="accent-color:var(--accent1);width:13px;height:13px;cursor:pointer"> ⚙️ Стратегия
+    </label>
+    <!-- Landing -->
+    <a href="project/card.html" target="_blank" data-i18n="login" style="padding:5px 12px;border-radius:8px;font-size:10px;font-weight:500;color:var(--text2);text-decoration:none;border:1px solid var(--card-border);display:flex;align-items:center;gap:4px;transition:all 0.15s" onmouseover="this.style.borderColor='var(--card-border-hover)';this.style.background='var(--card)'" onmouseout="this.style.borderColor='var(--card-border)';this.style.background='transparent'">🌐 Лендинг</a>
+    <!-- Folder -->
+    <a href="#" onclick="openProjectFolder();return false" data-i18n="folder" style="padding:5px 12px;border-radius:8px;font-size:10px;font-weight:500;color:var(--text2);text-decoration:none;border:1px solid var(--card-border);display:flex;align-items:center;gap:4px;transition:all 0.15s" onmouseover="this.style.borderColor='var(--card-border-hover)';this.style.background='var(--card)'" onmouseout="this.style.borderColor='var(--card-border)';this.style.background='transparent'">📂 Папка</a>
+    <!-- Results -->
+    <a href="#" onclick="showResults();return false" data-i18n="results" style="padding:5px 12px;border-radius:8px;font-size:10px;font-weight:500;color:var(--text2);text-decoration:none;border:1px solid var(--card-border);display:flex;align-items:center;gap:4px;transition:all 0.15s" onmouseover="this.style.borderColor='var(--card-border-hover)';this.style.background='var(--card)'" onmouseout="this.style.borderColor='var(--card-border)';this.style.background='transparent'">📦 Результаты</a>
+    <!-- Agents -->
+    <a href="agents.html" data-i18n="agentsBtn" style="padding:5px 12px;border-radius:8px;font-size:10px;font-weight:500;color:var(--text2);text-decoration:none;border:1px solid var(--card-border);display:flex;align-items:center;gap:4px;transition:all 0.15s;background:var(--accent2-dim);border-color:rgba(0,206,201,0.2)" onmouseover="this.style.background='var(--accent2)';this.style.color='#fff'" onmouseout="this.style.background='var(--accent2-dim)';this.style.color='var(--text2)'">🧠 Agents</a>
+    <!-- Providers -->
+    <a href="providers.html" data-i18n="providersBtn" style="padding:5px 12px;border-radius:8px;font-size:10px;font-weight:500;color:var(--text2);text-decoration:none;border:1px solid var(--card-border);display:flex;align-items:center;gap:4px;transition:all 0.15s;background:var(--accent1-dim);border-color:rgba(108,92,231,0.25)" onmouseover="this.style.background='var(--accent1)';this.style.color='#fff'" onmouseout="this.style.background='var(--accent1-dim)';this.style.color='var(--text2)'">🔌 Providers</a>
+    <!-- Server indicator -->
+    <span id="serverInd" style="display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:500;color:var(--text2);border:1px solid var(--card-border)">
+      <span id="statusDot" style="width:7px;height:7px;border-radius:50%;background:var(--red)"></span>
+      <span id="statusText">Сервер</span>
+    </span>
+  </div>
+</header>
+
+<div class="main">
+
+<!-- ─── LEFT: AGENTS ─── -->
+<div class="col-agents">
+  <div class="ph"><span data-i18n="aiAgents">🧠 AI-агенты</span><span class="cnt" id="agentCnt">0 / 8</span></div>
+  <div class="agent-list" id="agentList"></div>
+  <div class="spec-bar" id="specBar">
+    <button class="spec-pill on" data-spec="all" data-i18n="all">Все</button>
+    <button class="spec-pill" data-spec="dev" data-i18n="dev">💻 Разработка</button>
+    <button class="spec-pill" data-spec="marketing" data-i18n="marketing">📢 Маркетинг</button>
+    <button class="spec-pill" data-spec="finance" data-i18n="finance">💰 Бухгалтерия</button>
+  </div>
+</div>
+
+<!-- ─── CENTER: TASK BOARD ─── -->
+<div class="col-task">
+  <div class="ti">
+    <textarea id="taskInput" placeholder="Опиши задачу. Например: разработай web-приложение для заметок с регистрацией и тегами" data-i18n-placeholder="placeholder"></textarea>
+    <div class="ti-act">
+      <button class="btn btn-p" id="runBtn" onclick="createTask()" data-i18n="newTask">➕ Новая задача</button>
+      <button class="btn btn-g" onclick="copyTaskCmd()" data-i18n="copy">📋 Копировать</button>
+      <button class="btn btn-g" onclick="clearTask()" data-i18n="clear">✕ Очистить</button>
+      <button class="btn btn-p" id="autoBtn" onclick="toggleAutoMode()" style="font-size:10px;background:linear-gradient(135deg,var(--accent1-dim),rgba(108,92,231,0.2));color:var(--accent5)"></button>
+      <button class="btn btn-p" id="modeBtn" onclick="togglePipelineMode()" style="font-size:10px"></button>
+      <button class="btn btn-g" id="readyLabel" disabled style="font-size:10px;border-color:rgba(255,255,255,0.4);padding:7px 20px" data-i18n="readyLabel">Готов</button>
+      <button class="btn btn-p" id="startBtn" onclick="startPipeline()" disabled data-i18n="start">▶ Старт</button>
+    </div>
+  </div>
+
+  <!-- STATUS INFO STRIP (только цифры и агент справа) -->
+  <div style="padding:4px 14px 0;display:flex;justify-content:flex-end;align-items:center;gap:6px;font-size:9px;color:var(--text3)">
+    <span id="fileCount">📄 0</span>
+    <span class="sep">|</span>
+    <span id="agentStatus">👤 —</span>
+  </div>
+
+  <!-- STATUS CARD (цветное табло по статусу пайплайна) -->
+  <div id="statusCard" style="margin:6px 14px;padding:14px 16px;border-radius:12px;border:1px solid var(--card-border);background:var(--card);transition:all 0.3s">
+    <div id="statusBadgeWrap" style="display:flex;align-items:center;gap:10px">
+      <div id="statusBadge" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;background:rgba(255,255,255,0.06)">⚪</div>
+      <div style="flex:1;min-width:0">
+        <div id="statusTitle" style="font-size:13px;font-weight:600;color:var(--text3)">Ожидание задачи</div>
+        <div id="statusPhase" style="font-size:9px;color:var(--text3);margin-top:1px;font-weight:500">—</div>
+        <div id="statusDesc" style="font-size:10px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Напиши задачу и нажми «Новая задача»</div>
+      </div>
+      <div id="statusAgent" style="font-size:10px;color:var(--text3);padding:4px 10px;border-radius:6px;background:rgba(255,255,255,0.04)">—</div>
+    </div>
+    <div id="statusProgress" style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap"></div>
+  </div>
+
+  <!-- PIPELINE VISUALIZATION (динамическая труба) -->
+  <div id="pipelineViz" style="margin:0 14px 6px;padding:8px 12px;border-radius:10px;border:1px solid rgba(253,203,110,0.2);background:rgba(253,203,110,0.05);display:flex;align-items:center;gap:3px;font-size:10px;flex-shrink:0;overflow-x:auto;min-height:36px">
+    <span id="pvTask" style="padding:3px 8px;border-radius:6px;background:rgba(253,203,110,0.1);color:var(--orange);white-space:nowrap;font-weight:600;flex-shrink:0">📝</span>
+    <span style="color:var(--text3);flex-shrink:0">▸</span>
+    <span id="pvAgents" style="padding:3px 8px;border-radius:6px;color:var(--text3);white-space:nowrap;flex-shrink:0">🤖</span>
+    <span style="color:var(--text3);flex-shrink:0">▸</span>
+    <span id="pvExecute" style="padding:3px 8px;border-radius:6px;color:var(--text3);white-space:nowrap;flex-shrink:0">⚙️</span>
+    <span style="color:var(--text3);flex-shrink:0">▸</span>
+    <span id="pvResult" onclick="showResults()" style="padding:3px 8px;border-radius:6px;color:var(--text3);white-space:nowrap;flex-shrink:0;cursor:pointer">📦</span>
+  </div>
+
+  <!-- EXECUTION GRAPH (свёртываемый) -->
+  <div id="graphWrap" style="margin:0 14px 6px;padding:0;border-radius:10px;border:1px solid rgba(0,206,201,0.15);background:rgba(0,206,201,0.03);display:none;overflow:hidden">
+    <div onclick="toggleGraph()" style="padding:8px 12px;font-size:9px;font-weight:600;color:var(--accent2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;border-bottom:1px solid rgba(0,206,201,0.08)">
+      <span>📊 Граф выполнения</span>
+      <span id="graphArrow" style="transition:transform 0.2s">▼</span>
+    </div>
+    <div id="graphBody" style="padding:10px 12px;font-size:10px;overflow-x:auto;white-space:nowrap"></div>
+  </div>
+
+  <!-- LIVE LOG (окно с прокруткой, в рамке как пайплан) -->
+  <div id="logWrap" style="margin:10px 14px;padding:0;border-radius:12px;border:1px solid var(--accent1);background:rgba(108,92,231,0.05);flex:1;display:flex;flex-direction:column;min-height:60px;max-height:25vh;overflow:hidden">
+    <div style="padding:10px 14px;font-size:10px;font-weight:600;color:var(--accent5);text-transform:uppercase;letter-spacing:0.5px;display:flex;justify-content:space-between;border-bottom:1px solid rgba(108,92,231,0.15);flex-shrink:0">
+      <span data-i18n="log">📡 Лог</span>
+      <span style="display:flex;gap:6px;align-items:center">
+        <span id="logCount" style="font-weight:400;color:var(--text3)">0</span>
+        <span id="copyLogBtn" onclick="copyLog()" title="Копировать лог" style="cursor:pointer;font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.06);color:var(--text3);transition:all 0.15s" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='var(--text)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--text3)'">📋</span>
+      </span>
+    </div>
+    <div id="logBody" style="overflow-y:auto;padding:8px 14px;font-size:11px;line-height:1.6;color:var(--text2);min-height:0;flex:1"></div>
+  </div>
+
+  <!-- CHAT (диалог с пайплайном) -->
+  <div id="chatWrap" style="margin:0 14px 10px;padding:0;border-radius:12px;border:1px solid rgba(0,184,148,0.2);background:rgba(0,184,148,0.03);display:flex;flex-direction:column;max-height:22vh;overflow:hidden;flex-shrink:0">
+    <div style="padding:8px 14px;font-size:9px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;display:flex;justify-content:space-between;border-bottom:1px solid rgba(0,184,148,0.1);flex-shrink:0">
+      <span>💬 Диалог <span id="chatPending" style="font-weight:400;color:var(--orange);font-size:8px;display:none">⏳ ждёт ответа</span></span>
+      <span id="chatCount" style="font-weight:400;color:var(--text3)">0</span>
+    </div>
+    <div id="chatBody" style="overflow-y:auto;padding:8px 14px;font-size:10px;line-height:1.5;color:var(--text2);min-height:0;flex:1"></div>
+    <div id="chatInputRow" style="padding:8px 10px;border-top:1px solid rgba(0,184,148,0.08);display:flex;gap:6px;flex-shrink:0">
+      <input id="chatInput" type="text" placeholder="Напиши ответ или вопрос..." style="flex:1;padding:7px 10px;border-radius:8px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-family:'Inter',sans-serif;font-size:11px;outline:none" onkeydown="if(event.key==='Enter')sendChatAnswer()">
+      <button id="chatSendBtn" onclick="sendChatAnswer()" style="padding:7px 14px;border-radius:8px;border:none;background:linear-gradient(135deg,#00b894,#00cec9);color:#fff;font-size:10px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">→</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── RIGHT: PROVIDERS (compact health) ─── -->
+<div class="col-models">
+  <div class="ph" style="cursor:pointer;color:var(--green)" onclick="window.open('providers.html','_blank')" title="Открыть Providers">🔌 Провайдеры</div>
+  <div class="models-list" id="modelsList"></div>
+</div>
+</div><!-- .main -->
+</div><!-- .app -->
+
+<!-- FOOTER -->
+<div style="position:fixed;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text2);z-index:50;text-align:center;white-space:nowrap;pointer-events:none;background:rgba(7,7,13,0.6);padding:4px 16px;border-radius:12px;backdrop-filter:blur(4px);border:1px solid var(--card-border)" class="footer-credit">
+  © 2026 Sergey Kornilov
+</div>
+
+<!-- MODAL INFO -->
+<div class="modal-overlay" id="infoModal">
+  <div class="modal">
+    <h3>ℹ️ Детали провайдера</h3>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-close"><button class="btn btn-g" onclick="closeModal()">Закрыть</button></div>
+  </div>
+</div>
+
+<!-- RESULTS MODAL -->
+<div class="modal-overlay" id="resultsModal">
+  <div class="modal" style="max-width:700px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column">
+    <h3>📦 Результаты агентов</h3>
+    <div id="resultsBody" style="flex:1;overflow-y:auto;font-size:11px;line-height:1.6;color:var(--text2)"></div>
+    <div class="modal-close" style="flex-shrink:0"><button class="btn btn-g" onclick="closeResults()">Закрыть</button></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───
+const AGENTS = [
+  {id:'ceo',nm:'CEO',em:'🏛️',rl:'Стратегия, бизнес-модель',sk:['ideation','strategy','business model','pitch'],sp:'all'},
+  {id:'pm',nm:'PM',em:'📋',rl:'Задачи, требования, спринты',sk:['task breakdown','requirements','sprint','spec'],sp:'all'},
+  {id:'cto',nm:'CTO',em:'🔧',rl:'Архитектура, выбор стека',sk:['system design','tech stack','infrastructure','data model'],sp:'dev'},
+  {id:'developer',nm:'Developer',em:'💻',rl:'Фулстек, прототипы',sk:['frontend','backend','api','prototyping','database'],sp:'dev'},
+  {id:'designer',nm:'Designer',em:'🎨',rl:'UI/UX, визуал, бренд',sk:['visual design','css','branding','responsive','prototype'],sp:'dev'},
+  {id:'marketer',nm:'Marketer',em:'📢',rl:'Лендинги, копирайтинг',sk:['landing page','copywriting','gtm','seo','pitch deck'],sp:'marketing'},
+  {id:'qa',nm:'QA',em:'🧪',rl:'Тесты, баги, качество',sk:['testing','bug reports','qa','e2e','performance'],sp:'dev'},
+  {id:'analyst',nm:'Analyst',em:'💰',rl:'Юнит-экономика, метрики',sk:['unit economics','forecasts','kpi','dashboard','report'],sp:'finance'},
+  {id:'researcher',nm:'Researcher',em:'🔍',rl:'Веб-поиск, сбор фактов',sk:['research','web search','competitive analysis','fact checking'],sp:'all'}
+];
+
+const PROVIDERS = [
+  {id:'deepseek',nm:'DeepSeek V4 Flash',em:'⭐',pr:'DeepSeek',free:true,paid:false,on:false,lim:0,total:999999,mode:'auto',tasks:0},
+  {id:'openai',nm:'OpenAI GPT-4o',em:'🤖',pr:'OpenAI',free:false,paid:true,on:false,lim:0,total:999999,mode:'auto',tasks:0},
+  {id:'gemini',nm:'Gemini 2.5 Flash',em:'🔮',pr:'Google (free)',free:true,paid:false,on:false,lim:0,total:20,mode:'auto',tasks:0},
+  {id:'mistral',nm:'Mistral AI',em:'🌬️',pr:'Mistral (free)',free:true,paid:false,on:false,lim:0,total:2000,mode:'auto',tasks:0},
+  {id:'openrouter',nm:'OpenRouter',em:'🌐',pr:'Multi-model (free)',free:true,paid:false,on:false,lim:0,total:5000,mode:'auto',tasks:0},
+  {id:'github',nm:'GitHub Models',em:'🐙',pr:'Microsoft (free)',free:true,paid:false,on:false,lim:0,total:3000,mode:'auto',tasks:0},
+  {id:'anthropic',nm:'Claude Sonnet 4.6',em:'🌀',pr:'Anthropic (paid)',free:false,paid:true,on:false,lim:0,total:999999,mode:'auto',tasks:0},
+  {id:'xai',nm:'xAI Grok-2',em:'✖️',pr:'xAI (paid)',free:false,paid:true,on:false,lim:0,total:999999,mode:'auto',tasks:0},
+  {id:'groq',nm:'Groq Cloud',em:'⚡',pr:'Groq (free)',free:true,paid:false,on:false,lim:0,total:999999,mode:'auto',tasks:0},
+  {id:'together',nm:'Together AI',em:'🔥',pr:'Together (free)',free:true,paid:false,on:false,lim:0,total:999999,mode:'auto',tasks:0},
+  {id:'perplexity',nm:'Perplexity',em:'💎',pr:'Perplexity (paid)',free:false,paid:true,on:false,lim:0,total:999999,mode:'auto',tasks:0}
+];
+
+const PAID = [];
+
+// ─── STATE ───
+let onAgents = new Set();
+let currSpec = 'all';
+let pipelineMode = 'complex'; // 'simple' | 'complex'
+let currentLang = localStorage.getItem('craftstack_lang') || 'ru';
+
+const LANG = {
+  ru: {
+    newTask: '➕ Новая задача',
+    copy: '📋 Копировать',
+    clear: '✕ Очистить',
+    start: '▶ Старт',
+    running: '⟳ Выполняется...',
+    done: '✅ Готово',
+    login: '🌐 Лендинг',
+    folder: '📂 Папка',
+    set: 'Уст.',
+    refresh: 'Обн.',
+    online: '✅ онлайн',
+    offline: '🔴 офлайн',
+    waiting: '⏳ waiting',
+    statusWaiting: '⏳ Ожидает старта',
+    statusRunning: '⟳ Выполняется',
+    statusDone: '✅ Готово',
+    statusIdle: '⚪ Ожидание',
+    cardIdle: 'Ожидание задачи',
+    cardWaiting: 'Задача принята',
+    cardRunning: '⟳ Выполняется',
+    cardDone: '✅ Выполнено',
+    cardDescIdle: 'Напиши задачу и нажми «Новая задача»',
+    readyLabel: 'Готов',
+    noTask: 'Нет задачи. Напиши задачу сначала.',
+    pipelineStarted: '▶ Pipeline запущен',
+    taskSent: '✅ Задача отправлена на сервер',
+    serverError: '⚠️ Ошибка сервера',
+    serverOffline: '⚠️ Сервер недоступен',
+    noAgents: '⚠️ Подключи хотя бы одного агента слева',
+    keySaved: '✅ API-ключ сохранён',
+    keySet: '🟢 установлен',
+    enterKey: '⚠️ Введи API-ключ',
+    agentOn: '● on',
+    agentOff: 'off',
+    all: 'Все',
+    dev: '💻 Разработка',
+    marketing: '📢 Маркетинг',
+    finance: '💰 Бухгалтерия',
+    aiAgents: '🧠 AI-агенты',
+    providers: '🔌 Провайдеры',
+    paid: '💳 Платные',
+    connect: '🔗 Подключить',
+    disconnect: '🔌 Откл',
+    auto: '⟳ авто',
+    manual: '✋ ручной',
+    on: 'on',
+    off: 'off',
+    log: '📡 Лог',
+    modeSimple: '📨 Простая',
+    modeComplex: '🔧 Сложная',
+    monitor: '⟳ Открыть',
+    placeholder: 'Опиши задачу. Например: разработай web-приложение для заметок с регистрацией и тегами',
+    selectAuto: '— по навыку (авто) —',
+    pvTask: '📝 Задача',
+    pvAgents: '🤖 Агенты',
+    pvExecute: '⚙️ Выполнение',
+    pvResult: '📦 Результат',
+    footer: '© 2026 Sergey Kornilov',
+    pipelineTitle: '📋 Пайплайн',
+    serverStatus: 'Статус сервера',
+    copied: '📋 Команды скопированы',
+    copyFail: '⚠️ Не удалось скопировать',
+    folderOpenFail: '⚠️ Не удалось открыть папку',
+    chatCleared: 'Чат очищен. Чем помочь?',
+    results: '📦 Результаты',
+    providersBtn: '🔌 Providers',
+    agentsBtn: '🧠 Agents',
+    strategy: '⚙️ Стратегия',
+    assistant: 'Assistant',
+    founder: 'Founder'
+  },
+  en: {
+    newTask: '➕ New Task',
+    copy: '📋 Copy',
+    clear: '✕ Clear',
+    start: '▶ Start',
+    running: '⟳ Running...',
+    done: '✅ Done',
+    login: '🌐 Landing',
+    folder: '📂 Folder',
+    set: 'Set',
+    refresh: 'Upd.',
+    online: '✅ online',
+    offline: '🔴 offline',
+    waiting: '⏳ waiting',
+    statusWaiting: '⏳ Waiting to start',
+    statusRunning: '⟳ Running',
+    statusDone: '✅ Done',
+    statusIdle: '⚪ Idle',
+    cardIdle: 'Waiting for task',
+    cardWaiting: 'Task accepted',
+    cardRunning: '⟳ Running',
+    cardDone: '✅ Completed',
+    cardDescIdle: 'Write a task and click «New Task»',
+    readyLabel: 'Ready',
+    noTask: 'No task. Write a task first.',
+    pipelineStarted: '▶ Pipeline started',
+    taskSent: '✅ Task sent to server',
+    serverError: '⚠️ Server error',
+    serverOffline: '⚠️ Server unavailable',
+    noAgents: '⚠️ Select at least one agent on the left',
+    keySaved: '✅ API key saved',
+    keySet: '🟢 set',
+    enterKey: '⚠️ Enter API key',
+    agentOn: '● on',
+    agentOff: 'off',
+    all: 'All',
+    dev: '💻 Development',
+    marketing: '📢 Marketing',
+    finance: '💰 Finance',
+    aiAgents: '🧠 AI Agents',
+    providers: '🔌 Providers',
+    paid: '💳 Paid',
+    connect: '🔗 Connect',
+    disconnect: '🔌 Disc.',
+    auto: '⟳ auto',
+    manual: '✋ manual',
+    on: 'on',
+    off: 'off',
+    log: '📡 Log',
+    modeSimple: '📨 Simple',
+    modeComplex: '🔧 Complex',
+    monitor: '⟳ Open',
+    placeholder: 'Describe the task. E.g.: build a web app for notes with registration and tags',
+    selectAuto: '— by skill (auto) —',
+    pvTask: '📝 Task',
+    pvAgents: '🤖 Agents',
+    pvExecute: '⚙️ Execute',
+    pvResult: '📦 Result',
+    footer: '© 2026 Sergey Kornilov',
+    pipelineTitle: '📋 Pipeline',
+    serverStatus: 'Server status',
+    copied: '📋 Commands copied',
+    copyFail: '⚠️ Copy failed',
+    folderOpenFail: '⚠️ Failed to open folder',
+    chatCleared: 'Chat cleared. How can I help?',
+    results: '📦 Results',
+    providersBtn: '🔌 Providers',
+    agentsBtn: '🧠 Agents',
+    strategy: '⚙️ Strategy',
+    assistant: 'Assistant',
+    founder: 'Founder'
+  }
+};
+
+function t(key){
+  return LANG[currentLang]?.[key] || LANG.ru[key] || key;
+}
+
+let _strategyEnabled = true;
+function toggleStrategy(on){
+  _strategyEnabled = on;
+  localStorage.setItem('cs_strategy', on ? '1' : '0');
+  // Strategy toggle now controls extra agents (analyst, cto), not CEO
+  if(on && !onAgents.has('analyst')){ onAgents.add('analyst'); saveAgents(); renderAgents(currSpec); updateRunBtn(); }
+  else if(!on && onAgents.has('analyst')){ onAgents.delete('analyst'); saveAgents(); renderAgents(currSpec); updateRunBtn(); }
+  if(on && !onAgents.has('cto')){ onAgents.add('cto'); saveAgents(); renderAgents(currSpec); updateRunBtn(); }
+  else if(!on && onAgents.has('cto')){ onAgents.delete('cto'); saveAgents(); renderAgents(currSpec); updateRunBtn(); }
+}
+function changeVersion(){
+  const v = prompt('Новая версия:', document.getElementById('verBadge').textContent);
+  if(v && v.trim()) document.getElementById('verBadge').textContent = v.trim();
+}
+function changeName(){
+  const n = prompt('Ваше имя:', document.getElementById('founderName').textContent);
+  if(n && n.trim()){ document.getElementById('founderName').textContent = n.trim(); localStorage.setItem('cs_founder_name', n.trim()); }
+}
+
+function toggleLang(){
+  currentLang = (currentLang === 'ru') ? 'en' : 'ru';
+  localStorage.setItem('craftstack_lang', currentLang);
+  document.documentElement.lang = currentLang;
+  document.getElementById('langBtn').textContent = currentLang === 'ru' ? '🇬🇧 EN' : '🇷🇺 RU';
+  applyLang();
+  syncPipelineModeBtn();
+}
+
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (el.tagName === 'A' || el.tagName === 'BUTTON' || el.tagName === 'SPAN') { el.innerHTML = t(key); return; }
+    el.textContent = t(key);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    el.title = t(el.dataset.i18nTitle);
+  });
+  document.title = currentLang === 'en' ? 'CraftStack — AI Workbench' : 'CraftStack — v0.3';
+  // Update agent badges (re-render to refresh md-badge text for current lang)
+  renderAgents(currSpec);
+  // Update provider on/off
+  document.querySelectorAll('.mcard .sttxt').forEach(el => {
+    el.textContent = el.classList.contains('g') ? t('on') : t('off');
+  });
+  // Pipeline viz labels
+  document.getElementById('pvTask').textContent = t('pvTask');
+  document.getElementById('pvAgents').textContent = t('pvAgents');
+  document.getElementById('pvExecute').textContent = t('pvExecute');
+  document.getElementById('pvResult').textContent = t('pvResult');
+  // Footer
+  document.querySelector('.footer-credit') && (document.querySelector('.footer-credit').textContent = t('footer'));
+  // Pipeline title
+  const pt = document.querySelector('[data-i18n="pipelineTitle"]');
+  if (pt) pt.innerHTML = t('pipelineTitle');
+  // AgentPick option
+  const apo = document.querySelector('#agentPick option[data-i18n="selectAuto"]');
+  if (apo) apo.textContent = t('selectAuto');
+  // Start button
+  syncStartBtn();
+  syncAutoBtn();
+}
+
+function syncPipelineModeBtn(){
+  const btn = document.getElementById('modeBtn');
+  if (pipelineMode === 'simple') {
+    btn.textContent = t('modeSimple');
+    btn.className = 'btn btn-g';
+    btn.style.background = 'rgba(0,184,148,0.15)';
+    btn.style.border = '1px solid rgba(0,184,148,0.3)';
+    btn.style.color = '#00b894';
+  } else {
+    btn.textContent = t('modeComplex');
+    btn.className = 'btn btn-p';
+    btn.style.background = '';
+    btn.style.border = '';
+    btn.style.color = '';
+  }
+}
+
+function togglePipelineMode(){
+  pipelineMode = (pipelineMode === 'simple') ? 'complex' : 'simple';
+  syncPipelineModeBtn();
+}
+
+// ─── PERSIST ───
+
+// ─── AGENTS ───
+function renderAgents(spec){
+  currSpec = spec||'all';
+  const el = document.getElementById('agentList'); el.innerHTML = '';
+  AGENTS.forEach(a=>{
+    if(currSpec!=='all' && a.sp!==currSpec) return;
+    const on = onAgents.has(a.id);
+    const d = document.createElement('div');
+    d.className = 'agent-item'+(on?' on':'');
+    d.dataset.slug = a.id;
+    const provId = getAgentProvider(a.id);
+    const provLabel = getProviderLabel(provId);
+    let provStatus = _providerHealth[provId] || 'unknown';
+    if (provStatus === 'unknown' && window._savedKeys && window._savedKeys[provId]) provStatus = 'ok';
+    const dotColor = provStatus==='ok' ? '#00b894' : provStatus==='nobill' ? '#fdcb6e' : '#8888a0';
+    // Per-agent execution status
+    const execStatus = window._lastState?.progress?.[a.id]?.status;
+    let mdStyle, mdText;
+    if (!execStatus) {
+      mdStyle = 'background:var(--card);color:var(--text3);border-color:var(--card-border)';
+      mdText = t('off');
+    } else if (execStatus === 'running' || execStatus === 'done') {
+      mdStyle = 'background:rgba(0,184,148,0.15);color:#00b894;border-color:rgba(0,184,148,0.25)';
+      mdText = t('on');
+    } else if (execStatus === 'error') {
+      mdStyle = 'background:rgba(214,48,49,0.15);color:#d63031;border-color:rgba(214,48,49,0.25)';
+      mdText = 'err';
+    } else {
+      mdStyle = 'background:var(--card);color:var(--text3);border-color:var(--card-border)';
+      mdText = t('off');
+    }
+    d.innerHTML = `
+      <div class="chk">${on?'✓':''}</div>
+      <div class="av">${a.em}</div>
+      <div class="inf"><div class="nm">${a.nm}</div><div class="rl">${a.rl}</div></div>
+      <span class="pr-badge"><span class="pr-dot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${dotColor};margin-right:4px;vertical-align:middle;box-shadow:0 0 3px ${dotColor}66" title="${provStatus==='ok'?'Connected':provStatus==='nobill'?'Needs billing':'Unknown'}"></span>${provLabel}</span>
+      <span class="md-badge" style="${mdStyle}">${mdText}</span>
+      <div class="sk">${a.sk.map(s=>'<span class="sk-tag">'+s+'</span>').join('')}</div>`;
+    d.onclick=()=>toggleAgent(a.id);
+    el.appendChild(d);
+  });
+  document.getElementById('agentCnt').textContent = onAgents.size+' / '+AGENTS.length;
+  if(spec) document.querySelectorAll('.spec-pill').forEach(p=>{
+    const isOn = p.dataset.spec === spec;
+    p.classList.toggle('on', isOn);
+    if (isOn && p.dataset.i18n) p.textContent = t(p.dataset.i18n);
+  });
+  updateAgentPick();
+  updateRunBtn();
+}
+
+function saveAgents(){ try{localStorage.setItem('craftstack_agents', JSON.stringify([...onAgents]))}catch(e){} }
+function loadAgents(){
+  try{
+    const d = JSON.parse(localStorage.getItem('craftstack_agents')||'[]');
+    if(d.length){ d.forEach(id=>onAgents.add(id)); }
+  }catch(e){}
+}
+
+function toggleAgent(id){
+  if(_autoMode){ showMsg('Режим «Авто» — агентов назначает PM'); return; }
+  if(onAgents.has(id)) onAgents.delete(id); else onAgents.add(id);
+  saveAgents();
+  renderAgents(currSpec);
+  syncAgents();
+}
+
+function syncAgents(){
+  fetch('/api/agents', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({agents:[...onAgents]})
+  }).catch(()=>{});
+}
+
+function saveApiKey(){
+  const inp = document.getElementById('apiKeyInput');
+  if(!inp) return;
+  const key = inp.value.trim();
+  if(!key){ showMsg(t('enterKey')); return; }
+  fetch('/api/key', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({key})
+  }).then(r=>r.json()).then(d=>{
+    if(d.ok){
+      showMsg(t('keySaved'));
+      const st = document.getElementById('apiKeyStatus');
+      if(st) st.textContent = t('keySet');
+      inp.value = '';
+    }
+  }).catch(()=>showMsg(t('serverOffline')));
+}
+
+function checkApiKey(){
+  fetch('/api/config').then(r=>r.json()).then(c=>{
+    const st = document.getElementById('apiKeyStatus');
+    const btn = document.getElementById('apiKeyBtn');
+    if(st) st.textContent = c.has_key ? '🟢' : '⚪';
+    if(btn) btn.textContent = c.has_key ? t('refresh') : t('set');
+    // Update keys section status
+    if (c.api_keys) {
+      Object.keys(c.api_keys).forEach(k => {
+        const inp = document.getElementById('key-'+k);
+        if (inp) inp.placeholder = c.api_keys[k] ? '••••••••' : '🔑';
+      });
+    }
+    // Load routing (from config which includes it)
+    if (c.routing) { agentRouting = c.routing; renderAgents(currSpec); }
+  }).catch(()=>{});
+}
+
+const PROVIDER_LABELS = {deepseek:'⭐DS',openai:'🤖GPT',gemini:'🔮GM',mistral:'🌬️MS',openrouter:'🌐OR',github:'🐙GH',anthropic:'🌀CL',xai:'✖️XA',groq:'⚡GQ',together:'🔥TO',perplexity:'💎PP'};
+let agentRouting = {};
+let _defaultRouting = {};
+
+function getAgentProvider(slug){
+  const r = agentRouting[slug];
+  if (r && r.provider) return r.provider;
+  if (_defaultRouting[slug]) return _defaultRouting[slug];
+  return 'deepseek';
+}
+function getProviderLabel(id){
+  return PROVIDER_LABELS[id] || id.slice(0,3).toUpperCase();
+}
+
+function toggleKeys(){
+  const t = document.getElementById('keysToggle');
+  const b = document.getElementById('keysBody');
+  t.classList.toggle('open'); b.classList.toggle('open');
+  if (b.classList.contains('open') && !document.getElementById('keysList').children.length) renderKeys();
+}
+
+function renderKeys(){
+  const el = document.getElementById('keysList'); el.innerHTML = '';
+  const providers = ['deepseek','openai','gemini','mistral','openrouter','github'];
+  providers.forEach(pid => {
+    const label = PROVIDER_LABELS[pid] || pid;
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;gap:4px;margin-bottom:4px;align-items:center';
+    div.innerHTML = '<span style="font-size:10px;color:var(--text2);min-width:60px">'+label+'</span><input id="key-'+pid+'" type="password" placeholder="🔑" style="flex:1;padding:4px 8px;border-radius:6px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-size:10px;outline:none"><button class="btn btn-conn" onclick="saveKey(\''+pid+'\')" style="padding:3px 8px;font-size:9px">'+t('set')+'</button>';
+    el.appendChild(div);
+  });
+  // Load existing key status
+  fetch('/api/config').then(r=>r.json()).then(c => {
+    if (c.api_keys) {
+      Object.keys(c.api_keys).forEach(k => {
+        const inp = document.getElementById('key-'+k);
+        if (inp) inp.placeholder = '••••••••';
+      });
+    }
+  }).catch(()=>{});
+}
+
+function saveKey(pid){
+  const inp = document.getElementById('key-'+pid);
+  const key = inp.value.trim();
+  if (!key) return;
+  const keys = {};
+  keys[pid] = key;
+  fetch('/api/keys', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({keys})
+  }).then(r=>r.json()).then(d => {
+    if (d.ok) { inp.placeholder = '••••••••'; inp.value = ''; showMsg('✅ '+pid+' key saved'); }
+  }).catch(()=>showMsg(t('serverOffline')));
+}
+
+document.getElementById('specBar').querySelectorAll('.spec-pill').forEach(p=>{
+  p.onclick=()=>renderAgents(p.dataset.spec);
+});
+
+// ─── TASK ───
+function createTask(){
+  const text = document.getElementById('taskInput').value.trim();
+  if(!text) return;
+  const agents = [...onAgents];
+  // Allow submitting without agents — server will auto-select
+  fetch('/api/task', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({task:text, agents, mode:pipelineMode})
+  }).then(r=>r.json()).then(d=>{
+    if(d.ok) {
+      showMsg(t('taskSent'));
+      // If auto-selected, update the UI
+      if (d.auto_selected && d.agents) {
+        onAgents.clear();
+        d.agents.forEach(id => onAgents.add(id));
+        saveAgents();
+        renderAgents(currSpec);
+        showMsg('🤖 Auto-selected: ' + d.agents.join(', '));
+      }
+    } else showMsg(t('serverError'));
+  }).catch(()=>{ showMsg(t('serverOffline')); });
+}
+
+// ─── PROVIDERS (compact health) ───
+let _providerHealth = {};
+function loadProviderHealth(){
+  try{ _providerHealth = JSON.parse(localStorage.getItem('ph_status') || '{}'); }catch(e){}
+}
+loadProviderHealth();
+function renderProviders(){
+  const el = document.getElementById('modelsList'); el.innerHTML = '';
+  // Respect hidden providers from providers.html
+  let hidden = [];
+  try{ hidden = JSON.parse(localStorage.getItem('ph_hidden') || '[]'); }catch(e){}
+  const visible = PROVIDERS.filter(p => !hidden.includes(p.id));
+  let activeCount = 0;
+  visible.forEach(p=>{
+    const hasKey = window._savedKeys && window._savedKeys[p.id];
+    const status = _providerHealth[p.id] || (hasKey ? 'unknown' : 'nokey');
+    if(status === 'ok') activeCount++;
+    const dotColor = status==='ok' ? '#00b894' : status==='nobill' ? '#fdcb6e' : status==='unknown' ? '#8888a0' : '#d63031';
+    const dotTitle = status==='ok' ? 'Работает' : status==='nobill' ? 'Нужен биллинг' : status==='unknown' ? 'Не проверен' : 'Нет ключа';
+    const d = document.createElement('div');
+    d.className = 'health-card';
+    d.innerHTML = `<span class="hdot" style="background:${dotColor};box-shadow:0 0 4px ${dotColor}44" title="${dotTitle}"></span><span class="hem">${p.em}</span><span class="hnm">${p.nm}</span>`;
+    el.appendChild(d);
+  });
+  const cnt = document.querySelector('.col-models .ph .cnt');
+  if(cnt) cnt.innerHTML = `<span style="color:var(--green)">${activeCount}</span> / ${visible.length}`;
+}
+
+function toggleProv(id){
+  const p = PROVIDERS.find(x=>x.id===id);
+  if(!p) return;
+  p.on = !p.on;
+  if(p.on) PROVIDERS.filter(x=>x.id!==id).forEach(x=>x.on=false);
+  renderProviders();
+  updateRunBtn();
+}
+
+function toggleMode(id){
+  const p = PROVIDERS.find(x=>x.id===id);
+  if(!p) return;
+  p.mode = p.mode==='auto'?'manual':'auto';
+  renderProviders();
+}
+
+function showInfo(id){
+  const p = PROVIDERS.find(x=>x.id===id);
+  if(!p) return;
+  const pct = p.total>0 ? Math.round(p.lim/p.total*100) : 0;
+  const modal = document.getElementById('modalBody');
+  modal.innerHTML = `
+    <div style="margin-bottom:12px;font-size:16px;font-weight:600;color:var(--text)">${p.em} ${p.nm}</div>
+    <div class="stat-row"><span>${currentLang==='en'?'Provider':'Провайдер'}</span><span>${p.pr}</span></div>
+    <div class="stat-row"><span>${currentLang==='en'?'Status':'Статус'}</span><span>${p.on?'🟢 '+(currentLang==='en'?'Connected':'Подключён'):'🔴 '+(currentLang==='en'?'Disconnected':'Отключён')}</span></div>
+    <div class="stat-row"><span>${currentLang==='en'?'Limit':'Лимит'}</span><span>${p.lim} / ${p.total} ${currentLang==='en'?'requests':'запросов'}</span></div>
+    <div class="stat-row"><span>${currentLang==='en'?'Load':'Загруженность'}</span><span>${pct}%</span></div>
+    <div class="stat-row"><span>${currentLang==='en'?'Mode':'Режим'}</span><span>${p.mode==='auto'?(currentLang==='en'?'Auto':'Автоматический'):(currentLang==='en'?'Manual':'Ручной')}</span></div>
+    <div class="stat-row"><span>${currentLang==='en'?'Tasks done':'Выполнено задач'}</span><span>${p.tasks}</span></div>
+    <div class="stat-row"><span>${currentLang==='en'?'Free':'Бесплатно'}</span><span>${p.free?'✅ '+(currentLang==='en'?'Yes':'Да'):'❌ '+(currentLang==='en'?'No':'Нет')}</span></div>
+    ${pct>=80?'<div style="margin-top:12px;padding:8px 12px;border-radius:8px;background:var(--red-dim);color:var(--red);font-size:11px">⚠️ '+(currentLang==='en'?'Limit almost exhausted. Switch to another provider or wait for reset.':'Лимит почти исчерпан. Переключись на другого провайдера или дождись сброса.')+'</div>':''}
+  `;
+  document.getElementById('infoModal').classList.add('show');
+}
+
+function testProvider(id){
+  fetch('/api/check-provider', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({provider: id})
+  }).then(r=>r.json()).then(data=>{
+    const modal = document.getElementById('modalBody');
+    if(data.ok){
+      modal.innerHTML = `
+        <div style="margin-bottom:12px;font-size:16px;font-weight:600;color:var(--green)">✅ ${id} — OK</div>
+        <div class="stat-row"><span>Время ответа</span><span>${data.elapsed}с</span></div>
+        <div class="stat-row"><span>Ответ</span><span style="max-width:280px;overflow:hidden;text-overflow:ellipsis">${escHtml(data.response)}</span></div>`;
+    } else {
+      modal.innerHTML = `
+        <div style="margin-bottom:12px;font-size:16px;font-weight:600;color:var(--red)">❌ ${id} — ошибка</div>
+        <div class="stat-row"><span>Ошибка</span><span style="color:var(--red);word-break:break-all">${escHtml(data.error)}</span></div>`;
+    }
+    document.getElementById('infoModal').classList.add('show');
+  }).catch(err=>{
+    const modal = document.getElementById('modalBody');
+    modal.innerHTML = `<div style="color:var(--red)">❌ Ошибка запроса: ${escHtml(err.message)}</div>`;
+    document.getElementById('infoModal').classList.add('show');
+  });
+}
+
+function testPaidProvider(id){
+  const map = {'openai':'openai','anthropic':'mistral','google-pro':'gemini'};
+  testProvider(map[id] || id);
+}
+
+function closeModal(){document.getElementById('infoModal').classList.remove('show')}
+document.getElementById('infoModal').onclick=function(e){if(e.target===this)closeModal()}
+
+// ─── RESULTS ───
+function fetchResults(){
+  fetch('/api/results').then(r=>r.json()).then(data=>{
+    window._resultsCache = data;
+  }).catch(()=>{});
+}
+
+function showResults(){
+  const data = window._resultsCache || {};
+  const el = document.getElementById('resultsBody');
+  const keys = Object.keys(data);
+  if(!keys.length){
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3)">Нет результатов. Запусти пайплайн.</div>';
+  } else {
+    el.innerHTML = keys.map(slug => {
+      const item = data[slug];
+      return `<details style="margin-bottom:8px;border:1px solid var(--card-border);border-radius:8px;padding:8px 12px;background:var(--card)">
+        <summary style="cursor:pointer;font-weight:600;font-size:12px;color:var(--text)">🤖 ${slug.toUpperCase()} <span style="font-weight:400;color:var(--text3);font-size:10px">${item.file}</span></summary>
+        <pre style="margin-top:8px;padding:8px;background:rgba(0,0,0,0.3);border-radius:6px;overflow-x:auto;white-space:pre-wrap;font-size:10px;color:var(--text2);max-height:300px;overflow-y:auto">${escHtml(item.content)}</pre>
+      </details>`;
+    }).join('');
+  }
+  document.getElementById('resultsModal').classList.add('show');
+}
+
+function closeResults(){document.getElementById('resultsModal').classList.remove('show')}
+document.getElementById('resultsModal').onclick=function(e){if(e.target===this)closeResults()}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function fetchResults(){
+  fetch('/api/results').then(r=>r.json()).then(data=>{
+    window._resultsCache = data;
+  }).catch(()=>{});
+}
+
+function togglePaidModel(id){
+  const p = PAID.find(x=>x.id===id);
+  if(!p) return;
+  p.on = !p.on;
+  const card = document.querySelector(`[data-paid="${id}"]`);
+  if(card){
+    card.classList.toggle('on',p.on);
+    card.querySelector('.mst .ind').className = 'ind '+(p.on?'g':'off');
+    card.querySelector('.sttxt').textContent = p.on?t('on'):t('off');
+    card.querySelector('.sttxt').className = 'sttxt'+(p.on?' g':' off');
+    card.querySelector('.btn-conn').textContent = p.on?t('disconnect'):t('connect');
+    card.querySelector('.btn-conn').className = 'btn btn-conn'+(p.on?' on':'');
+  }
+}
+
+// ─── HELPERS ───
+function updateAgentPick(){
+  const sel = document.getElementById('agentPick');
+  if(!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">'+t('selectAuto')+'</option>';
+  AGENTS.filter(a=>onAgents.has(a.id)).forEach(a=>{
+    sel.innerHTML += `<option value="${a.id}">${a.em} ${a.nm}</option>`;
+  });
+  if([...sel.options].some(o=>o.value===cur)) sel.value=cur;
+}
+
+function updateTarget(){
+  const sel = document.getElementById('agentPick');
+  if(!sel) return;
+  const v = sel.value;
+}
+
+function startPipeline(){
+  fetch('/api/start', {method:'POST'}).then(r=>r.json()).then(d=>{
+    if(d.ok){
+      showMsg(t('pipelineStarted'));
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('startBtn').textContent = t('running');
+    } else showMsg(t('noTask'));
+  }).catch(()=>showMsg(t('serverOffline')));
+}
+
+function toggleAutoMode(){
+  _autoMode = !_autoMode;
+  localStorage.setItem('cs_auto', _autoMode ? '1' : '0');
+  if(_autoMode){
+    onAgents.clear(); saveAgents();
+    renderAgents(currSpec);
+  }
+  syncAutoBtn();
+}
+
+let _autoMode = true;
+let _logFrom = 0;
+
+function clearTask(){
+  document.getElementById('taskInput').value = '';
+  // Clear server state
+  fetch('/api/clear', { method:'POST' }).catch(()=>{});
+  const logEl = document.getElementById('logBody');
+  const cntEl = document.getElementById('logCount');
+  if(logEl) logEl.innerHTML = '<div style="color:var(--text3);padding:4px 0">—</div>';
+  if(cntEl) cntEl.textContent = '0';
+  _logFrom = Date.now();
+  // Reset status card
+  const sc = document.getElementById('statusCard');
+  const sb = document.getElementById('statusBadge');
+  const st = document.getElementById('statusTitle');
+  const sph = document.getElementById('statusPhase');
+  const sd = document.getElementById('statusDesc');
+  const sa = document.getElementById('statusAgent');
+  const sp = document.getElementById('statusProgress');
+  if(sc){ sc.style.background='var(--card)'; sc.style.borderColor='var(--card-border)'; }
+  if(sb){ sb.style.background='rgba(255,255,255,0.06)'; sb.style.border='2px solid var(--text3)'; sb.style.color='var(--text3)'; sb.textContent='⚪'; }
+  if(st){ st.style.color='var(--text3)'; st.textContent=t('cardIdle'); }
+  if(sph){ sph.textContent='—'; sph.style.color='var(--text3)'; }
+  if(sd) sd.textContent=t('cardDescIdle');
+  if(sa) sa.textContent='—';
+  if(sp) sp.innerHTML='';
+  // Clear chat
+  const cb = document.getElementById('chatBody');
+  const cc = document.getElementById('chatCount');
+  if (cb) cb.innerHTML = '<div style="color:var(--text3);padding:4px 0;font-style:italic">💬 Пайплайн может задать вопрос — ответишь здесь</div>';
+  if (cc) cc.textContent = '0';
+  window._lastState = null;
+  renderAgents(currSpec);
+  // Reset pipeline viz
+  const pv = document.getElementById('pvTask');
+  const pa = document.getElementById('pvAgents');
+  const pe = document.getElementById('pvExecute');
+  const pr = document.getElementById('pvResult');
+  if(pv){ pv.textContent='📝'; pv.style.color='var(--orange)'; pv.style.background='rgba(253,203,110,0.1)'; }
+  if(pa){ pa.textContent='🤖'; pa.style.color='var(--text3)'; pa.style.background='transparent'; }
+  if(pe){ pe.textContent='⚙️'; pe.style.color='var(--text3)'; pe.style.background='transparent'; }
+  if(pr){ pr.textContent='📦'; pr.style.color='var(--text3)'; pr.style.background='transparent'; }
+  showMsg('✕ Очищено');
+}
+function syncAutoBtn(){
+  const btn = document.getElementById('autoBtn');
+  if(!btn) return;
+  if(_autoMode){
+    btn.textContent = currentLang === 'en' ? '⟳ Auto' : '⟳ Авто';
+    btn.style.background = 'linear-gradient(135deg,var(--accent1-dim),rgba(108,92,231,0.2))';
+    btn.style.color = 'var(--accent5)';
+  } else {
+    btn.textContent = currentLang === 'en' ? '✋ Manual' : '✋ Ручной';
+    btn.style.background = 'linear-gradient(135deg,var(--orange-dim),rgba(253,203,110,0.2))';
+    btn.style.color = 'var(--orange)';
+  }
+}
+
+function syncStartBtn(){
+  // called from applyLang — text updates for start button are handled in checkServer
+}
+
+function updateRunBtn(){
+  // Button always enabled — router can auto-select agents
+  document.getElementById('runBtn').disabled = false;
+}
+
+function showMsg(t){
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--card);border:1px solid var(--card-border);padding:12px 20px;border-radius:12px;font-size:12px;z-index:200;max-width:360px;backdrop-filter:blur(12px)';
+  d.textContent = t;
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),3000);
+}
+
+function copyTaskCmd(){
+  const text = document.getElementById('taskInput').value.trim();
+  if(!text){ showMsg('Нет текста задачи'); return; }
+  navigator.clipboard.writeText(text).then(()=>showMsg('📋 Скопировано')).catch(()=>showMsg('⚠️ Не удалось скопировать'));
+}
+
+// ─── ASSISTANT ───
+function loadFiles(){
+  fetch('/api/files').then(r=>r.json()).then(f=>{
+    const filtered = f.filter(x=>!x.path.includes('.craftstack')&&!x.name.startsWith('.'));
+    document.getElementById('fileCount').textContent = '📄 '+filtered.length;
+  }).catch(()=>{});
+}
+function openProjectFolder(){
+  fetch('/api/explorer', {method:'POST'}).catch(()=>showMsg(t('folderOpenFail')));
+}
+
+// ─── CHAT ───
+function fetchChat(){
+  const body = document.getElementById('chatBody');
+  const cnt = document.getElementById('chatCount');
+  const pend = document.getElementById('chatPending');
+  const inp = document.getElementById('chatInput');
+  const btn = document.getElementById('chatSendBtn');
+  const wrap = document.getElementById('chatWrap');
+  if (!body || !cnt) return;
+  fetch('/api/chat').then(r=>r.json()).then(d=>{
+    const msgs = d.chat || [];
+    cnt.textContent = msgs.length;
+    const hasPending = !!d.pending_question;
+    if (pend) pend.style.display = hasPending ? 'inline' : 'none';
+    if (inp) inp.disabled = !hasPending;
+    if (inp) inp.placeholder = hasPending ? '✏️ Напиши ответ...' : 'Ожидание вопроса от пайплайна...';
+    if (btn) btn.disabled = !hasPending;
+    if (wrap) wrap.classList.toggle('chat-waiting', hasPending);
+    if (hasPending) {
+      inp.focus();
+      body.scrollTop = body.scrollHeight;
+    }
+    renderChat(msgs, d.pending_question);
+  }).catch(()=>{});
+}
+
+function renderChat(msgs, pendingQ) {
+  const body = document.getElementById('chatBody');
+  if (!body) return;
+  if (!msgs || msgs.length === 0) {
+    body.innerHTML = '<div style="color:var(--text3);padding:4px 0;font-style:italic">💬 Пайплайн может задать вопрос — ответишь здесь</div>';
+    return;
+  }
+  body.innerHTML = msgs.map(m => {
+    const icon = m.role === 'user' ? '🧑' : m.role === 'system' ? '⚙️' : '🏛️';
+    const bg = m.role === 'user' ? 'rgba(0,184,148,0.1)' : m.role === 'system' ? 'rgba(255,255,255,0.04)' : 'rgba(108,92,231,0.1)';
+    const align = m.role === 'user' ? 'flex-end' : 'flex-start';
+    const ts = m.ts ? new Date(m.ts*1000).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+    return `<div style="display:flex;gap:6px;margin-bottom:6px;align-items:flex-start;justify-content:${align}">
+      <div style="padding:6px 10px;border-radius:8px;background:${bg};color:var(--text);max-width:85%;font-size:10px;line-height:1.4">
+        <span style="font-size:9px;color:var(--text3)">${icon} ${ts}</span><br>
+        ${m.text.replace(/\n/g, '<br>')}
+      </div>
+    </div>`;
+  }).join('');
+  if (pendingQ) {
+    body.innerHTML += `<div style="display:flex;gap:6px;margin-bottom:6px;align-items:flex-start;justify-content:flex-start;opacity:0.7">
+      <div style="padding:6px 10px;border-radius:8px;background:rgba(253,203,110,0.1);border:1px dashed rgba(253,203,110,0.3);color:var(--orange);max-width:85%;font-size:10px;line-height:1.4">
+        ⏳ <em>Ожидает ответа...</em>
+      </div>
+    </div>`;
+  }
+  body.scrollTop = body.scrollHeight;
+}
+
+function sendChatAnswer() {
+  const inp = document.getElementById('chatInput');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  fetch('/api/answer', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({answer: text})
+  }).then(r => r.json()).then(d => {
+    if (d.ok) fetchChat();
+  }).catch(() => {});
+}
+
+function renderLog(logArr){
+  const el = document.getElementById('logBody');
+  const cnt = document.getElementById('logCount');
+  if(!logArr||!logArr.length){ el.innerHTML='<div style="color:var(--text3);padding:4px 0">—</div>'; cnt.textContent='0'; return; }
+  cnt.textContent = logArr.length;
+  el.innerHTML = logArr.map(l=>{
+    const txt = l.text || '';
+    let color = 'var(--text2)';
+    if(l.level==='error'||txt.includes('❌')||txt.includes('Error')||txt.includes('error')) color='var(--red)';
+    else if(l.level==='system'||txt.includes('system')) color='var(--text3)';
+    else if(l.level==='agent'||txt.includes('→')||txt.includes('агент')) color='var(--accent2)';
+    else if(l.level==='api'||txt.includes('API')||txt.includes('provider')) color='var(--accent5)';
+    else if(l.level==='success'||txt.includes('✅')) color='var(--green)';
+    return '<div style="padding:2px 0;border-bottom:1px solid rgba(108,92,231,0.06)"><span style="color:var(--text3);font-size:10px">'+l.time+'</span> <span style="color:var(--accent5);font-size:10px">['+(l.agent||'?')+']</span> <span style="color:'+color+'">'+txt+'</span></div>';
+  }).join('');
+}
+
+function copyLog(){
+  fetch('/api/state').then(r=>r.json()).then(s=>{
+    const logs = s.log || [];
+    if (!logs.length) { showMsg('Лог пуст'); return; }
+    const text = logs.map(l => `[${l.time}] [${l.agent||'?'}] ${l.text||''}`).join('\n');
+    navigator.clipboard.writeText(text).then(()=>showMsg('📋 Лог скопирован ('+logs.length+' строк)')).catch(()=>showMsg('⚠️ Не удалось скопировать'));
+  }).catch(()=>showMsg('⚠️ Ошибка сервера'));
+}
+
+// ─── BACKGROUND ───
+const cnv = document.getElementById('bg'), ctx = cnv.getContext('2d');
+let parts=[];
+function rs(){cnv.width=window.innerWidth;cnv.height=window.innerHeight}
+window.addEventListener('resize',rs); rs();
+for(let i=0;i<40;i++) parts.push({x:Math.random()*cnv.width,y:Math.random()*cnv.height,r:Math.random()*2+0.5,dx:(Math.random()-0.5)*0.25,dy:(Math.random()-0.5)*0.25,o:Math.random()*0.4+0.1});
+function anim(){ctx.clearRect(0,0,cnv.width,cnv.height);parts.forEach(p=>{p.x+=p.dx;p.y+=p.dy;if(p.x<0)p.x=cnv.width;if(p.x>cnv.width)p.x=0;if(p.y<0)p.y=cnv.height;if(p.y>cnv.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(108,92,231,'+p.o+')';ctx.fill()});requestAnimationFrame(anim)}
+anim();
+
+// ─── SERVER STATUS + SYNC ───
+function checkServer(){
+  fetch('/api/state').then(r=>r.json()).then(s=>{
+    window._lastState = s;
+    const dot = document.getElementById('statusDot');
+    const ind = document.getElementById('serverInd');
+    if(!dot||!ind) return;
+    if(s.error){ dot.style.background='var(--red)'; ind.style.borderColor='rgba(214,48,49,0.3)'; ind.style.color='var(--red)'; }
+    else { dot.style.background='var(--green)'; ind.style.borderColor='rgba(0,184,148,0.25)'; ind.style.color='var(--green)'; }
+    if(_logFrom && (s.status==='idle'||s.status==='done')){
+      // keep log cleared
+    } else {
+      renderLog(s.log);
+      _logFrom = 0;
+    }
+
+    // Update routing from state (prefer pipeline_routing if running, else routing.json)
+    if (s.pipeline_routing) { agentRouting = s.pipeline_routing; }
+    else if (s.routing) { agentRouting = s.routing; }
+
+    // Sync agent checkmarks from actual pipeline agents
+    if (s.agents && s.agents.length && (s.status === 'running' || s.status === 'done' || s.status === 'waiting')) {
+      let changed = false;
+      s.agents.forEach(id => { if (!onAgents.has(id)) { onAgents.add(id); changed = true; } });
+      if (changed) { saveAgents(); renderAgents(currSpec); }
+    }
+
+    // Restore task text in textarea (only if empty or user hasn't started typing)
+    const taskInput = document.getElementById('taskInput');
+    if (s.task && taskInput && !taskInput.value.startsWith(s.task)) {
+      taskInput.value = s.task;
+    }
+    // Re-render agents if routing changed
+    const routingKey = JSON.stringify(s.pipeline_routing || s.routing);
+    if (routingKey !== window._lastRoutingKey) {
+      window._lastRoutingKey = routingKey;
+      renderAgents(currSpec);
+    }
+
+    // Update agent status (справа)
+    const as = document.getElementById('agentStatus');
+    as.textContent = '👤 '+(s.currentAgent&&s.currentAgent!=='-'?s.currentAgent:'—');
+
+    if(s.status==='done'){ fetchResults(); } // grab results when pipeline completes
+
+    // Update big status card
+    const sb = document.getElementById('statusBadge');
+    const st = document.getElementById('statusTitle');
+    const sph = document.getElementById('statusPhase');
+    const sd = document.getElementById('statusDesc');
+    const sa = document.getElementById('statusAgent');
+    const sp = document.getElementById('statusProgress');
+    const card = document.getElementById('statusCard');
+    const colors={idle:['var(--text3)','var(--card)','var(--card-border)'],waiting:['#f97316','rgba(249,115,22,0.12)','#fb923c'],running:['#fdcb6e','rgba(253,203,110,0.12)','#f39c12'],done:['#00b894','rgba(0,184,148,0.12)','#00b894']};
+    const c = colors[s.status]||colors.idle;
+    card.style.background = c[1]; card.style.borderColor = c[2];
+    sb.style.background = c[1]; sb.style.border = '2px solid '+c[0]; sb.style.color = c[0];
+    const iconMap={idle:'⚪',waiting:'⏳',running:'⟳',done:'✅'};
+    sb.textContent = iconMap[s.status]||'⚪';
+    st.style.color = c[0];
+    st.textContent = s.status==='idle'?t('cardIdle'):s.status==='waiting'?t('cardWaiting'):s.status==='running'?t('cardRunning'):t('cardDone');
+    // Phase display
+    const phaseLabel = s.phase && s.phase !== 'idle' ? (s.phase === 'waiting_input' ? 'Ожидание ответа' : s.phase.charAt(0).toUpperCase() + s.phase.slice(1)) : '';
+    const phaseColors = {analysis:'var(--accent5)', routing:'var(--accent2)', execution:'#fdcb6e', synthesis:'var(--accent1)', done:'var(--green)', waiting_input:'var(--orange)'};
+    if (sph) {
+      if (phaseLabel) {
+        sph.textContent = 'Фаза: ' + phaseLabel;
+        sph.style.color = phaseColors[s.phase] || 'var(--text3)';
+      } else {
+        sph.textContent = '—';
+        sph.style.color = 'var(--text3)';
+      }
+    }
+    sd.textContent = s.task && s.task.length>60 ? s.task.slice(0,60)+'...' : s.task||t('cardDescIdle');
+    sa.textContent = s.currentAgent&&s.currentAgent!=='-'?s.currentAgent:'—';
+    const pm = s.progress||{};
+    sp.innerHTML = Object.keys(pm).length?Object.keys(pm).map(k=>'<span style="padding:2px 8px;border-radius:4px;font-size:9px;background:rgba(255,255,255,0.06);color:var(--text2)">'+(k)+' '+((pm[k].status==='done'?'✅':pm[k].status==='running'?'⟳':'⏳'))+'</span>').join(''):'';
+
+    // Sync start button
+    const startBtn = document.getElementById('startBtn');
+    const startReady = s.status === 'waiting';
+    startBtn.disabled = !startReady;
+    startBtn.style.background = startReady ? 'linear-gradient(135deg,#00b894,#00cec9)' : '';
+    startBtn.style.color = startReady ? '#fff' : '';
+
+    // Update pipeline viz
+    const agentNames = s.progress ? Object.keys(s.progress) : [];
+    updatePipelineViz(s.status, s.task, agentNames, s.currentAgent, s.progress);
+
+    // Fetch execution graph if pipeline is running/done
+    if (s.status === 'running' || s.status === 'done') {
+      fetchGraph();
+    }
+
+    // Fetch chat
+    fetchChat();
+
+    // Refresh agent provider status
+    loadProviderHealth();
+    renderAgents(currSpec);
+
+    // Sync Готов label
+    const rl = document.getElementById('readyLabel');
+    if(rl) rl.disabled = !startReady;
+
+  }).catch(()=>{
+    const dot = document.getElementById('statusDot');
+    const ind = document.getElementById('serverInd');
+    if(dot) dot.style.background='var(--red)';
+    if(ind){ ind.style.borderColor='rgba(214,48,49,0.3)'; ind.style.color='var(--red)'; }
+  });
+}
+
+function updatePipelineViz(status, task, agents, currentAgent, progress){
+  const elTask = document.getElementById('pvTask');
+  const elAgents = document.getElementById('pvAgents');
+  const elExec = document.getElementById('pvExecute');
+  const elRes = document.getElementById('pvResult');
+
+  const taskShort = task && task.length > 25 ? task.slice(0,25)+'…' : task || '';
+  elTask.textContent = '📝 ' + (taskShort || t('pvTask'));
+
+  const agentList = agents && agents.length ? agents.join(', ') : '';
+  const currAgent = currentAgent && currentAgent !== '-' ? currentAgent : '';
+
+  if (status === 'idle' || !task) {
+    elAgents.textContent = '🤖 ' + t('pvAgents');
+    elExec.textContent = '⚙️ ' + t('pvExecute');
+    elRes.textContent = '📦 ' + t('pvResult');
+  } else if (status === 'waiting') {
+    elAgents.textContent = '🤖 ' + (agentList || t('pvAgents'));
+    elExec.textContent = '⚙️ ⏳';
+    elRes.textContent = '📦 —';
+  } else if (status === 'running') {
+    elAgents.textContent = '🤖 ' + (agentList || t('pvAgents'));
+    elExec.textContent = '⚙️ ⟳ ' + (currAgent || '…');
+    elRes.textContent = '📦 ⟳';
+  } else if (status === 'done') {
+    elAgents.textContent = '🤖 ' + (agentList || t('pvAgents'));
+    elExec.textContent = '⚙️ ✅';
+    const doneCount = progress ? Object.values(progress).filter(p => p.status === 'done').length : 0;
+    elRes.textContent = '📦 ✅' + (doneCount ? ' ('+doneCount+')' : '');
+  }
+
+  const activeIdx = status==='idle'||!task?0:status==='waiting'?1:status==='running'?2:3;
+  [elTask, elAgents, elExec, elRes].forEach((el,i)=>{
+    if(i<activeIdx){ el.style.background='rgba(253,203,110,0.15)'; el.style.color='var(--orange)'; }
+    else if(i===activeIdx){ el.style.background='rgba(253,203,110,0.25)'; el.style.color='#fdcb6e'; }
+    else { el.style.background='transparent'; el.style.color='var(--text3)'; }
+  });
+}
+
+// ─── EXECUTION GRAPH ───
+let _graphCollapsed = false;
+
+function toggleGraph() {
+  _graphCollapsed = !_graphCollapsed;
+  const body = document.getElementById('graphBody');
+  const arrow = document.getElementById('graphArrow');
+  if (!body || !arrow) return;
+  body.style.display = _graphCollapsed ? 'none' : 'block';
+  arrow.textContent = _graphCollapsed ? '▶' : '▼';
+}
+
+function fetchGraph() {
+  const wrap = document.getElementById('graphWrap');
+  if (!wrap) return;
+  fetch('/api/graph').then(r=>r.json()).then(graph => {
+    if (!graph || graph.length === 0) {
+      wrap.style.display = 'none';
+      return;
+    }
+    wrap.style.display = 'block';
+    renderGraph(graph);
+  }).catch(() => {});
+}
+
+const AGENT_ICONS = {ceo:'🏛️',pm:'📋',cto:'🔧',developer:'💻',designer:'🎨',marketer:'📢',qa:'🧪',analyst:'💰',researcher:'🔍'};
+
+function renderGraph(graph) {
+  const body = document.getElementById('graphBody');
+  if (!body) return;
+  const arrow = document.getElementById('graphArrow');
+  if (arrow) arrow.textContent = _graphCollapsed ? '▶' : '▼';
+  body.style.display = _graphCollapsed ? 'none' : 'block';
+
+  let html = '';
+  for (const level of graph) {
+    html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">`;
+    html += `<span style="font-size:9px;font-weight:600;color:var(--accent2);min-width:48px">L${level.level}</span>`;
+    for (const task of level.tasks) {
+      const icon = AGENT_ICONS[task.agent] || '🤖';
+      html += `<span style="display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:6px;background:rgba(0,206,201,0.08);border:1px solid rgba(0,206,201,0.15);font-size:9px;color:var(--text2)" title="${task.description || task.agent}">${icon} ${task.agent}</span>`;
+    }
+    html += `</div>`;
+  }
+  body.innerHTML = html;
+}
+
+// ─── INIT ───
+loadAgents();
+// Load saved founder name
+const savedName = localStorage.getItem('cs_founder_name');
+if(savedName) document.getElementById('founderName').textContent = savedName;
+// Load auto mode
+const savedAuto = localStorage.getItem('cs_auto');
+if(savedAuto === '0'){ _autoMode = false; }
+// Load strategy toggle state
+const savedStrategy = localStorage.getItem('cs_strategy');
+if(savedStrategy === '0'){ _strategyEnabled = false; document.getElementById('strategyToggle').checked = false; }
+else { document.getElementById('strategyToggle').checked = true; }
+// CEO is always on regardless of strategy
+if(!onAgents.has('ceo')){ onAgents.add('ceo'); saveAgents(); }
+renderAgents('all');
+if(_autoMode){
+  onAgents.clear(); saveAgents();
+  renderAgents(currSpec);
+}
+syncAutoBtn();
+fetch('/api/config').then(r=>r.json()).then(c => {
+  window._savedKeys = c.api_keys || {};
+  if (c.routing) { _defaultRouting = {}; Object.keys(c.routing).forEach(k => { _defaultRouting[k] = c.routing[k].provider || 'deepseek'; }); }
+  renderProviders();
+}).catch(()=>renderProviders());
+checkServer();
+checkApiKey();
+loadFiles();
+syncPipelineModeBtn();
+applyLang();
+setInterval(checkServer, 3000);
+setInterval(loadFiles, 10000);
+setInterval(fetchChat, 1000);
+</script>
+</body>
+</html>

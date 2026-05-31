@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15 Puzzle</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);padding:20px}
+.game{background:rgba(255,255,255,0.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:32px;width:400px;max-width:100%;box-shadow:0 25px 60px rgba(0,0,0,0.5)}
+h1{text-align:center;font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;letter-spacing:-0.3px}
+.sub{text-align:center;font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:24px;letter-spacing:0.3px}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;aspect-ratio:1;background:rgba(0,0,0,0.25);border-radius:16px;padding:8px;margin-bottom:20px}
+.tile{display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;border-radius:12px;cursor:pointer;transition:all 0.15s ease;user-select:none;background:linear-gradient(145deg,rgba(108,92,231,0.25),rgba(108,92,231,0.1));color:#c8c8e8;border:1px solid rgba(108,92,231,0.15)}
+.tile:hover{background:linear-gradient(145deg,rgba(108,92,231,0.35),rgba(108,92,231,0.15));transform:scale(1.03)}
+.tile:active{transform:scale(0.95)}
+.tile.empty{background:transparent;border-color:transparent;cursor:default;box-shadow:none;color:transparent;pointer-events:none}
+.tile.win{animation:pop 0.3s ease}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.controls{display:flex;gap:10px}
+.controls button{flex:1;padding:12px;border:none;border-radius:12px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s ease}
+.btn-new{background:linear-gradient(135deg,#6c5ce7,#8b7cf7);color:#fff}
+.btn-new:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(108,92,231,0.35)}
+.btn-auto{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.08)}
+.btn-auto:hover{background:rgba(255,255,255,0.12);color:#fff}
+.btn-auto:disabled{opacity:0.3;cursor:not-allowed}
+.moves{text-align:center;font-size:12px;color:rgba(255,255,255,0.35);margin-top:16px}
+.moves span{color:#8b7cf7;font-weight:600}
+#autoStatus{margin-top:14px;text-align:center;font-size:12px;color:#00b894;min-height:18px}
+</style>
+</head>
+<body>
+<div class="game">
+<h1>15 Puzzle</h1>
+<div class="sub">slide tiles to restore order</div>
+<div class="board" id="board"></div>
+<div class="controls">
+<button class="btn-new" onclick="newGame()">New Game</button>
+<button class="btn-auto" id="autoBtn" onclick="autoSolve()">Auto</button>
+</div>
+<div class="moves">Moves: <span id="moveCnt">0</span></div>
+<div id="autoStatus"></div>
+</div>
+
+<script>
+let board=[], emptyIdx=15, moves=0, solving=false, intervals=[];
+
+function init(){
+  board=Array.from({length:15},(_,i)=>i+1); board.push(0); emptyIdx=15;
+}
+
+function shuffle(){
+  for(let i=0;i<200;i++){
+    const adj = getAdj(emptyIdx);
+    const r = adj[Math.floor(Math.random()*adj.length)];
+    [board[emptyIdx],board[r]]=[board[r],board[emptyIdx]];
+    emptyIdx=r;
+  }
+  if(!isSolvable()) shuffle();
+}
+
+function isSolvable(){
+  let inv=0, arr=board.filter(v=>v!==0);
+  for(let i=0;i<arr.length;i++) for(let j=i+1;j<arr.length;j++) if(arr[i]>arr[j]) inv++;
+  const row=Math.floor(emptyIdx/4);
+  return (inv+row)%2===0;
+}
+
+function getAdj(i){
+  const r=Math.floor(i/4), c=i%4, a=[];
+  if(r>0) a.push(i-4);
+  if(r<3) a.push(i+4);
+  if(c>0) a.push(i-1);
+  if(c<3) a.push(i+1);
+  return a;
+}
+
+function render(){
+  const b=document.getElementById('board');
+  b.innerHTML='';
+  for(let i=0;i<16;i++){
+    const d=document.createElement('div'); d.className='tile'+(board[i]===0?' empty':'');
+    if(board[i]) d.textContent=board[i];
+    d.onclick=()=>move(i);
+    b.appendChild(d);
+  }
+  document.getElementById('moveCnt').textContent=moves;
+  if(checkWin()) setTimeout(()=>{
+    document.getElementById('autoStatus').textContent='Puzzle solved!';
+    document.getElementById('board').querySelectorAll('.tile:not(.empty)').forEach(t=>t.classList.add('win'));
+  },100);
+}
+
+function move(i){
+  if(solving) return;
+  if(!getAdj(emptyIdx).includes(i)) return false;
+  [board[emptyIdx],board[i]]=[board[i],board[emptyIdx]];
+  emptyIdx=i; moves++; render(); return true;
+}
+
+function checkWin(){
+  for(let i=0;i<15;i++) if(board[i]!==i+1) return false;
+  return board[15]===0;
+}
+
+function newGame(){
+  intervals.forEach(clearInterval); intervals=[];
+  solving=false; moves=0;
+  document.getElementById('autoBtn').disabled=false;
+  document.getElementById('autoStatus').textContent='';
+  init(); shuffle(); render();
+}
+
+function autoSolve(){
+  if(solving||checkWin()) return;
+  solving=true;
+  const btn=document.getElementById('autoBtn'); btn.disabled=true;
+  const st=document.getElementById('autoStatus'); st.textContent='Searching...';
+
+  const goal={};
+  for(let i=0;i<15;i++) goal[i+1]={r:Math.floor(i/4),c:i%4};
+  goal[0]={r:3,c:3};
+
+  function h(b){
+    let d=0;
+    for(let i=0;i<16;i++) if(b[i]){const g=goal[b[i]];d+=Math.abs(Math.floor(i/4)-g.r)+Math.abs(i%4-g.c);}
+    return d;
+  }
+
+  let solution=null;
+  const startB=board.slice(), startE=emptyIdx;
+  const limit=80;
+
+  function key(b){return b.join(',');}
+
+  function dfs(b, e, g, bound, path, visited){
+    const f=g+h(b);
+    if(f>bound) return f;
+    if(e===15){
+      let ok=true;
+      for(let i=0;i<15;i++) if(b[i]!==i+1){ok=false;break;}
+      if(ok){solution=[...path];return -1;}
+    }
+    let next=Infinity;
+    const adj=getAdj(e);
+    for(const n of adj){
+      if(path.length>0){const last=path[path.length-1]; if(n===last.from) continue;}
+      const nb=b.slice();
+      [nb[e],nb[n]]=[nb[n],nb[e]];
+      const nk=key(nb);
+      if(visited.has(nk)) continue;
+      visited.add(nk);
+      if(visited.size>500000){visited.delete(nk);continue;}
+      path.push({from:e,to:n});
+      const t=dfs(nb,n,g+1,bound,path,visited);
+      if(t===-1) return -1;
+      if(t<next) next=t;
+      path.pop();
+      visited.delete(nk);
+    }
+    return next;
+  }
+
+  let bound=h(startB);
+  while(!solution && bound<=limit){
+    st.textContent='Searching... bound='+bound;
+    const v=new Set(); v.add(key(startB));
+    bound=dfs(startB,startE,0,bound,[],v);
+    if(typeof bound!=='number'||bound===Infinity) break;
+  }
+
+  if(!solution){
+    st.textContent='Not found (bound '+bound+')'; solving=false; btn.disabled=false; return;
+  }
+
+  st.textContent='Solving ('+solution.length+' moves)...';
+  board=startB.slice(); emptyIdx=startE; moves=0; render();
+  let step=0;
+  const iv=setInterval(()=>{
+    if(step>=solution.length){
+      clearInterval(iv); solving=false; btn.disabled=false;
+      st.textContent='Solved!'; render(); return;
+    }
+    const{to}=solution[step];
+    [board[emptyIdx],board[to]]=[board[to],board[emptyIdx]];
+    emptyIdx=to; moves++; render(); step++;
+    if(step%5===0) st.textContent='Solving ('+step+'/'+solution.length+')...';
+  },80);
+  intervals.push(iv);
+}
+
+init(); shuffle(); render();
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "api_key": "",
+  "provider": "deepseek",
+  "api_keys": {
+    "openai": "",
+    "deepseek": "",
+    "gemini": "",
+    "anthropic": "",
+    "xai": "",
+    "github": "",
+    "groq": ""
+  },
+  "agent_routing": {}
+}

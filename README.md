@@ -1,19 +1,40 @@
-# StartupFamTeam
+# CraftStack — AI Agent Workbench
 
-AI startup team powered by Paperclip + Cursor Cloud.
+Лёгкая среда для работы с AI-агентами через OpenCode. Web-дашборд + Python-сервер без зависимостей.
 
-## Team
-- CEO: coordinates strategy and delegates tasks
-- CTO: technical architecture and oversight
-- Fullstack Developer: primary builder
-- Developer: secondary builder (AI/ML, blockchain, mobile)
-- PM: product management, requirements, prioritization
-- Designer: UI/UX, design system, prototypes
-- Researcher: internal research, technology evaluation
-- Marketer: go-to-market, social media, pitch materials
-- Business Analyst: unit economics, KPIs, financial projections
-- Assistant: supports CEO with coordination
+## Быстрый старт
 
-## Stack
-- [Paperclip](https://github.com/paperclipai/paperclip) � AI agent orchestration platform
-- Cursor Cloud � remote agent execution
+```
+start.bat
+```
+
+Откроет dashboard на http://127.0.0.1:8765/dashboard.html
+
+## Структура
+
+```
+server.py              — HTTP-сервер (REST API + SSE, порт 8765)
+dashboard.html         — основная панель (канбан + агенты + провайдеры)
+monitor.html           — монитор пайплайна (live SSE)
+start.bat              — лаунчер
+.opencode/modes/       — 8 режимов агентов
+project/               — артефакты (код, планы, отчёты)
+docs/                  — документация
+```
+
+## Агенты
+
+CEO → PM → CTO → Developer → Designer → Marketer → QA → Analyst
+
+## Pipeline
+
+1. Пользователь пишет задачу в dashboard → POST /api/task
+2. Assistant (OpenCode) выполняет задачу через режимы агентов
+3. Результат — в `project/`, статус — в `state.json`
+4. Monitor показывает прогресс через SSE
+
+## Запуск без start.bat
+
+```cmd
+python server.py 8765
+```

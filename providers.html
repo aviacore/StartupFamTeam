@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProviderHub — CraftStack</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#07070d;--bg2:#0d0d1a;--card:rgba(20,20,40,0.65);--card-hover:rgba(30,30,55,0.85);
+--card-border:rgba(255,255,255,0.06);--card-border-hover:rgba(108,92,231,0.3);
+--text:#e8e8f0;--text2:#8888a0;--text3:#555570;
+--accent1:#6c5ce7;--accent1-dim:rgba(108,92,231,0.15);--accent2:#00cec9;--accent2-dim:rgba(0,206,201,0.12);
+--accent3:#fd79a8;--accent4:#fdcb6e;--accent5:#a29bfe;
+--green:#00b894;--green-dim:rgba(0,184,148,0.15);--orange:#fdcb6e;--orange-dim:rgba(253,203,110,0.12);
+--red:#d63031;--red-dim:rgba(214,48,49,0.12);--radius:10px;--radius-lg:14px;
+--shadow:0 4px 24px rgba(0,0,0,0.3);
+}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.app{max-width:1000px;margin:0 auto;padding:20px;position:relative;z-index:1}
+
+/* HEADER */
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 0 20px;border-bottom:1px solid var(--card-border);margin-bottom:24px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff}
+.logo h1{font-size:18px;font-weight:700;letter-spacing:-0.5px}
+.hdr-links{display:flex;gap:8px}
+.hdr-links a{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:500;color:var(--text2);text-decoration:none;border:1px solid var(--card-border);transition:all 0.15s}
+.hdr-links a:hover{background:var(--card);color:var(--text);border-color:var(--card-border-hover)}
+
+/* SEARCH */
+.search-wrap{margin-bottom:20px}
+.search-wrap input{width:100%;padding:12px 16px;border-radius:var(--radius);border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border 0.15s}
+.search-wrap input:focus{border-color:var(--accent1)}
+.search-wrap input::placeholder{color:var(--text3)}
+
+/* STATS */
+.stats{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.stat-card{padding:14px 18px;border-radius:var(--radius);border:1px solid var(--card-border);background:var(--card);flex:1;min-width:140px}
+.stat-card .num{font-size:22px;font-weight:700;color:var(--accent5)}
+.stat-card .lbl{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
+
+/* PROVIDER GRID */
+.providers{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.pcard{padding:16px;border-radius:var(--radius-lg);border:1px solid var(--card-border);background:var(--card);transition:all 0.2s}
+.pcard:hover{border-color:var(--card-border-hover);background:var(--card-hover)}
+.pcard .top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.pcard .icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.pcard .info{flex:1;min-width:0}
+.pcard .info .name{font-size:14px;font-weight:700}
+.pcard .info .models{font-size:10px;color:var(--text2);margin-top:2px;line-height:1.4}
+.pcard .site{margin-bottom:10px}
+.pcard .site a{font-size:11px;color:var(--accent2);text-decoration:none}
+.pcard .site a:hover{text-decoration:underline}
+.pcard .fields{display:flex;gap:8px;flex-wrap:wrap}
+.pcard .fields .fgroup{flex:1;min-width:120px}
+.pcard .fields .fgroup label{display:block;font-size:9px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.5px}
+.pcard .fields input{width:100%;padding:6px 10px;border-radius:6px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-family:'Inter',sans-serif;font-size:11px;outline:none;transition:border 0.15s}
+.pcard .fields input:focus{border-color:var(--accent1)}
+.pcard .fields input::placeholder{color:var(--text3)}
+.pcard .fields .save-btn{padding:6px 12px;border-radius:6px;border:none;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;cursor:pointer;background:var(--accent1-dim);color:var(--accent5);align-self:flex-end}
+.pcard .fields .save-btn:hover{background:var(--accent1);color:#fff}
+.pcard .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:500;margin-top:6px}
+.badge-free{background:var(--green-dim);color:var(--green)}
+.badge-paid{background:var(--orange-dim);color:var(--orange)}
+.badge-key{background:var(--accent1-dim);color:var(--accent5)}
+.pcard .balance-row{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11px}
+.pcard .balance-row .bal-val{color:var(--green);font-weight:600}
+.pcard .balance-row .bal-empty{color:var(--text3)}
+
+/* FOOTER */
+.footer{text-align:center;padding:30px 0 10px;font-size:10px;color:var(--text3);border-top:1px solid var(--card-border);margin-top:30px}
+
+@media(max-width:640px){
+.providers{grid-template-columns:1fr}
+.stats{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="app">
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">P</div>
+    <div><h1>ProviderHub</h1></div>
+  </div>
+  <div class="hdr-links">
+    <a href="dashboard.html">⬅ Dashboard</a>
+  </div>
+</header>
+
+<div class="search-wrap" style="display:flex;gap:8px">
+  <input id="searchInput" type="text" placeholder="🔍 Поиск провайдера или модели..." oninput="filterProviders()" style="flex:1">
+  <button onclick="showAddProvider()" style="padding:12px 18px;border-radius:10px;border:1px solid var(--card-border);background:var(--card);color:var(--accent5);font-family:Inter,sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s" onmouseover="this.style.background='var(--accent1-dim)'" onmouseout="this.style.background='var(--card)'">➕</button>
+  <button id="checkAllBtn" onclick="checkAllProviders()" style="padding:12px 18px;border-radius:10px;border:1px solid var(--card-border);background:var(--card);color:var(--accent2);font-family:Inter,sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s" onmouseover="this.style.background='var(--accent2-dim)'" onmouseout="this.style.background='var(--card)'">🔄 Check All</button>
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="num" id="totalCount">0</div><div class="lbl">Провайдеров</div></div>
+  <div class="stat-card"><div class="num" id="keyCount">0</div><div class="lbl">Активно / с ключами</div></div>
+  <div class="stat-card"><div class="num" id="balanceCount">$0</div><div class="lbl">Всего баланс</div></div>
+</div>
+
+<div class="providers" id="providerList"></div>
+
+<div class="footer">© 2026 Sergey Kornilov · CraftStack ProviderHub</div>
+</div>
+
+<script>
+const PROVIDERS = [
+  {id:'deepseek', em:'⭐', name:'DeepSeek', models:'DeepSeek V4 Flash, DeepSeek Coder V3', url:'https://platform.deepseek.com', free:true, color:'rgba(108,92,231,0.15)'},
+  {id:'openai', em:'🤖', name:'OpenAI', models:'GPT-4o, GPT-4o-mini, o3-mini, GPT-4.1', url:'https://platform.openai.com', free:false, color:'rgba(0,206,201,0.12)'},
+  {id:'gemini', em:'🔮', name:'Google Gemini', models:'Gemini 2.5 Flash, Gemini 2.5 Pro', url:'https://ai.google.dev', free:true, color:'rgba(253,203,110,0.12)'},
+  {id:'anthropic', em:'🌀', name:'Anthropic (Claude)', models:'Claude Sonnet 4.6, Claude Opus 4.7, Claude Haiku 4.5', url:'https://console.anthropic.com', free:false, color:'rgba(214,48,49,0.1)'},
+  {id:'mistral', em:'🌬️', name:'Mistral AI', models:'Mistral Small 3.1, Mistral Large 2, Codestral', url:'https://console.mistral.ai', free:true, color:'rgba(162,155,254,0.12)'},
+  {id:'xai', em:'✖️', name:'xAI (Grok)', models:'Grok-2, Grok-3', url:'https://console.x.ai', free:false, color:'rgba(0,184,148,0.1)'},
+  {id:'openrouter', em:'🌐', name:'OpenRouter', models:'Multi-model router (200+ моделей)', url:'https://openrouter.ai', free:true, color:'rgba(0,184,148,0.1)'},
+  {id:'github', em:'🐙', name:'GitHub Models', models:'GPT-4o-mini, Llama 3, Mistral, Phi-4', url:'https://github.com/marketplace/models', free:true, color:'rgba(255,255,255,0.04)'},
+  {id:'groq', em:'⚡', name:'Groq', models:'Mixtral 8x7B, Llama 3.3, Gemma 2, DeepSeek R1', url:'https://console.groq.com', free:true, color:'rgba(0,206,201,0.08)'},
+  {id:'together', em:'🔥', name:'Together AI', models:'Llama 3, Mixtral, DeepSeek, Qwen, DBRX', url:'https://together.ai', free:true, color:'rgba(253,203,110,0.08)'},
+  {id:'perplexity', em:'💎', name:'Perplexity', models:'Sonar, Sonar Pro, Sonar Huge', url:'https://www.perplexity.ai', free:false, color:'rgba(162,155,254,0.08)'}
+];
+
+let _providerStatus = {};
+
+// Load persisted provider statuses
+function loadProviderStatus(){
+  try{ _providerStatus = JSON.parse(localStorage.getItem('ph_status') || '{}'); }catch(e){ _providerStatus = {}; }
+}
+function saveProviderStatus(){
+  localStorage.setItem('ph_status', JSON.stringify(_providerStatus));
+}
+loadProviderStatus();
+
+function getCustomProviders(){
+  try{ return JSON.parse(localStorage.getItem('ph_custom') || '[]'); }catch(e){ return []; }
+}
+function saveCustomProviders(list){
+  localStorage.setItem('ph_custom', JSON.stringify(list));
+}
+function loadCustomProviders(){
+  const list = getCustomProviders();
+  list.forEach(cp => {
+    if(!PROVIDERS.some(x => x.id === cp.id)){
+      PROVIDERS.push({id:cp.id, em:'🔌', name: cp.name, models: cp.model, url: cp.endpoint, free:!cp.paid, color:'rgba(108,92,231,0.1)'});
+    }
+  });
+}
+loadCustomProviders();
+
+// Hidden built-in providers
+function getHiddenProviders(){
+  try{ return JSON.parse(localStorage.getItem('ph_hidden') || '[]'); }catch(e){ return []; }
+}
+function saveHiddenProviders(list){
+  localStorage.setItem('ph_hidden', JSON.stringify(list));
+}
+// Apply hidden filter
+const hidden = getHiddenProviders();
+hidden.forEach(id => {
+  const idx = PROVIDERS.findIndex(x => x.id === id);
+  if(idx >= 0) PROVIDERS.splice(idx, 1);
+});
+
+function getKey(pid){
+  try { return JSON.parse(localStorage.getItem('ph_keys')||'{}')[pid]||''; } catch(e){ return ''; }
+}
+function setKey(pid, val){
+  try { const k = JSON.parse(localStorage.getItem('ph_keys')||'{}'); k[pid]=val; localStorage.setItem('ph_keys',JSON.stringify(k)); } catch(e){}
+}
+function getBalance(pid){
+  try { return parseFloat(localStorage.getItem('ph_bal_'+pid))||0; } catch(e){ return 0; }
+}
+function setBalance(pid, val){
+  localStorage.setItem('ph_bal_'+pid, val);
+}
+
+function renderProviders(){
+  const el = document.getElementById('providerList'); el.innerHTML = '';
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let totalWithKeys = 0, totalActive = 0, totalBalance = 0;
+
+  PROVIDERS.forEach(p=>{
+    if(q && !p.name.toLowerCase().includes(q) && !p.models.toLowerCase().includes(q)) return;
+
+    const key = getKey(p.id);
+    const bal = getBalance(p.id);
+    if(key) totalWithKeys++;
+    if(_providerStatus[p.id] === 'ok') totalActive++;
+    totalBalance += bal;
+
+    const isCustom = p.id.startsWith('custom-');
+    const st = _providerStatus[p.id] || (key ? 'unknown' : 'nokey');
+    const dotColor = st==='ok' ? '#00b894' : st==='nobill' ? '#fdcb6e' : st==='unknown' ? '#8888a0' : '#d63031';
+    const dotTitle = st==='ok' ? 'Работает' : st==='nobill' ? 'Нужен биллинг' : st==='unknown' ? 'Не проверен' : 'Нет ключа / ошибка';
+
+    const d = document.createElement('div');
+    d.className = 'pcard';
+    d.style.position = 'relative';
+    d.innerHTML = `
+      <div style="position:absolute;top:12px;right:14px;width:10px;height:10px;border-radius:50%;background:${dotColor};box-shadow:0 0 8px ${dotColor}66" title="${dotTitle}"></div>
+      <div class="top">
+        <div class="icon" style="background:${p.color}">${p.em}</div>
+        <div class="info">
+          <div class="name">${p.name} ${isCustom?'<span style="font-size:9px;color:var(--accent5);font-weight:400">custom</span>':''}</div>
+          <div class="models">${p.models}</div>
+          <span class="badge ${p.free?'badge-free':'badge-paid'}">${p.free?'🆓 Free':'💳 Paid'}</span>
+          ${key?'<span class="badge badge-key">🔑 Key set</span>':''}
+        </div>
+      </div>
+      <div class="site"><a href="${p.url}" target="_blank">${p.url.replace('https://','')}</a></div>
+      <div class="fields">
+        <div class="fgroup" style="flex:2">
+          <label>🔑 API Key</label>
+          <input type="password" id="key-${p.id}" placeholder="${key?'••••••••':'Введи ключ...'}" value="${key?'':''}">
+        </div>
+        <div class="fgroup" style="flex:1">
+          <label>💰 Баланс ($)</label>
+          <input type="number" id="bal-${p.id}" step="0.01" min="0" placeholder="0.00" value="${bal||''}">
+        </div>
+        <button class="save-btn" onclick="saveProvider('${p.id}')">Сохранить</button>
+        <button class="save-btn" onclick="testProv('${p.id}')" style="background:var(--green-dim);color:var(--green)">🔍</button>
+        <button class="save-btn" onclick="clearKey('${p.id}')" style="background:var(--red-dim);color:${key?'var(--red)':'var(--text3)'};font-size:12px;line-height:1" title="Очистить ключ">✕</button>
+        <button class="save-btn" onclick="deleteProvider('${p.id}')" style="background:var(--red-dim);color:var(--red)" title="${isCustom?'Удалить навсегда':'Скрыть из списка'}">🗑️</button>
+      </div>
+      <div class="balance-row">
+        ${bal>0 ? '<span>💰 Баланс:</span><span class="bal-val">$'+bal.toFixed(2)+'</span>' : '<span class="bal-empty">— баланс не указан</span>'}
+      </div>`;
+    el.appendChild(d);
+  });
+
+  document.getElementById('totalCount').textContent = PROVIDERS.length;
+  document.getElementById('keyCount').innerHTML = `<span style="color:var(--green)">${totalActive}</span> / ${totalWithKeys}`;
+  document.getElementById('balanceCount').textContent = '$' + totalBalance.toFixed(2);
+}
+
+function saveProvider(pid){
+  const keyInp = document.getElementById('key-'+pid);
+  const balInp = document.getElementById('bal-'+pid);
+  const keyVal = keyInp.value.trim();
+  const balVal = balInp.value.trim();
+  if(keyVal) { setKey(pid, keyVal); keyInp.placeholder='••••••••'; keyInp.value=''; }
+  if(balVal) { setBalance(pid, parseFloat(balVal)||0); }
+  if(keyVal) {
+    const keys = {};
+    keys[pid] = keyVal;
+    fetch('/api/keys', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({keys})
+    }).catch(()=>{});
+    _providerStatus[pid] = 'unknown'; saveProviderStatus();
+  }
+  renderProviders();
+}
+
+function filterProviders(){ renderProviders(); }
+
+function testProv(pid){
+  const keyInp = document.getElementById('key-'+pid);
+  if(keyInp.value.trim()){
+    const keys = {}; keys[pid] = keyInp.value.trim();
+    setKey(pid, keyInp.value.trim());
+    fetch('/api/keys', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({keys})}).catch(()=>{});
+  }
+  fetch('/api/check-provider', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({provider: pid})
+  }).then(r=>r.json()).then(d=>{
+    if(d.ok){
+      _providerStatus[pid] = 'ok'; saveProviderStatus();
+      alert('✅ '+pid+' OK ('+d.elapsed+'s)\n\n'+d.response.slice(0,200));
+    } else {
+      const err = (d.error||'').toLowerCase();
+      if(err.includes('credit') || err.includes('balance') || err.includes('billing')){ _providerStatus[pid] = 'nobill'; saveProviderStatus(); }
+      else { _providerStatus[pid] = 'nokey'; saveProviderStatus(); }
+      alert('❌ '+pid+': '+d.error.slice(0,200));
+    }
+function checkAllProviders(){
+  const btn = document.getElementById('checkAllBtn');
+  if(!btn) return;
+  btn.textContent = '⟳ Testing...'; btn.disabled = true;
+  fetch('/api/check-all', {method:'POST'})
+    .then(r=>r.json())
+    .then(d => {
+      const results = d.results || {};
+      for(const [pid, r] of Object.entries(results)){
+        if(r.ok) _providerStatus[pid] = 'ok';
+        else if(r.nobill) _providerStatus[pid] = 'nobill';
+        else _providerStatus[pid] = 'nokey';
+      }
+      saveProviderStatus();
+      renderProviders();
+      btn.textContent = '🔄 Check All'; btn.disabled = false;
+    })
+    .catch(() => { btn.textContent = '🔄 Check All'; btn.disabled = false; });
+}
+
+// ─── INIT ───
+renderProviders();
+// Auto-test all providers on page load (after 1s delay to let UI render)
+setTimeout(checkAllProviders, 1000);
+  }).catch(()=>alert('❌ Server error'));
+}
+
+function clearKey(pid){
+  const key = getKey(pid);
+  if(!key){ alert('Нет сохранённого ключа для ' + pid); return; }
+  if(!confirm('Удалить ключ для ' + pid + '?')) return;
+  const keys = {};
+  keys[pid] = '';
+  fetch('/api/keys', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({keys})
+  }).then(r=>r.json()).then(d => {
+    if(d.ok){ setKey(pid, ''); delete _providerStatus[pid]; saveProviderStatus(); renderProviders(); }
+  }).catch(()=>{});
+}
+
+function showAddProvider(){
+  const html = `
+    <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center" id="addModal" onclick="if(event.target===this)closeAddProvider()">
+      <div style="background:var(--bg2);padding:24px;border-radius:14px;border:1px solid var(--card-border);width:400px;max-width:90vw">
+        <div style="font-size:16px;font-weight:700;margin-bottom:16px">➕ Добавить провайдера</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <input id="cpName" placeholder="Название (напр. My API)" style="padding:10px 14px;border-radius:8px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-size:13px;outline:none;font-family:Inter,sans-serif">
+          <input id="cpModel" placeholder="Модель (напр. custom-model-1)" style="padding:10px 14px;border-radius:8px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-size:13px;outline:none;font-family:Inter,sans-serif">
+          <input id="cpEndpoint" placeholder="API endpoint (https://...)" style="padding:10px 14px;border-radius:8px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-size:13px;outline:none;font-family:Inter,sans-serif">
+          <select id="cpPaid" style="padding:10px 14px;border-radius:8px;border:1px solid var(--card-border);background:rgba(0,0,0,0.3);color:var(--text);font-size:13px;outline:none;font-family:Inter,sans-serif">
+            <option value="free">🆓 Free</option>
+            <option value="paid">💳 Paid</option>
+          </select>
+          <button onclick="addCustomProvider()" style="padding:10px;border-radius:8px;border:none;background:var(--accent1);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif">➕ Добавить</button>
+          <button onclick="closeAddProvider()" style="padding:8px;border-radius:8px;border:1px solid var(--card-border);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;font-family:Inter,sans-serif">Отмена</button>
+        </div>
+      </div>
+    </div>`;
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  document.body.appendChild(div.firstElementChild);
+}
+function closeAddProvider(){
+  const el = document.getElementById('addModal');
+  if(el) el.remove();
+}
+function addCustomProvider(){
+  const name = document.getElementById('cpName').value.trim();
+  const model = document.getElementById('cpModel').value.trim();
+  const ep = document.getElementById('cpEndpoint').value.trim();
+  const paid = document.getElementById('cpPaid').value === 'paid';
+  if(!name || !model || !ep){ alert('Заполни все поля'); return; }
+  const list = getCustomProviders();
+  const id = 'custom-' + Date.now();
+  list.push({id, name, model: model, endpoint: ep, paid});
+  saveCustomProviders(list);
+  PROVIDERS.push({id, em:'🔌', name, models: model, url: ep, free:!paid, color:'rgba(108,92,231,0.1)'});
+  closeAddProvider();
+  renderProviders();
+}
+function deleteProvider(pid){
+  if(!confirm('Удалить провайдера «' + (PROVIDERS.find(x=>x.id===pid)?.name || pid) + '» из списка?')) return;
+  const isCustom = pid.startsWith('custom-');
+  if(isCustom){
+    const list = getCustomProviders().filter(x => x.id !== pid);
+    saveCustomProviders(list);
+  } else {
+    const hidden = getHiddenProviders();
+    if(!hidden.includes(pid)) hidden.push(pid);
+    saveHiddenProviders(hidden);
+  }
+  const idx = PROVIDERS.findIndex(x => x.id === pid);
+  if(idx >= 0) PROVIDERS.splice(idx, 1);
+  renderProviders();
+}
+
+// Background particles
+const cnv = document.getElementById('bg'), ctx = cnv.getContext('2d');
+let parts=[];
+function rs(){cnv.width=window.innerWidth;cnv.height=window.innerHeight}
+window.addEventListener('resize',rs); rs();
+for(let i=0;i<40;i++) parts.push({x:Math.random()*cnv.width,y:Math.random()*cnv.height,r:Math.random()*2+0.5,dx:(Math.random()-0.5)*0.25,dy:(Math.random()-0.5)*0.25,o:Math.random()*0.4+0.1});
+function anim(){ctx.clearRect(0,0,cnv.width,cnv.height);parts.forEach(p=>{p.x+=p.dx;p.y+=p.dy;if(p.x<0)p.x=cnv.width;if(p.x>cnv.width)p.x=0;if(p.y<0)p.y=cnv.height;if(p.y>cnv.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(108,92,231,'+p.o+')';ctx.fill()});requestAnimationFrame(anim)}
+anim();
+
+renderProviders();
+</script>
+</body>
+</html>

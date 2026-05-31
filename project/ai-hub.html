@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Manager Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6C63FF',
+                        secondary: '#FF6584',
+                        dark: '#1E1E2C',
+                        card: '#2B2B3D',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Smooth transitions and modern feel */
+        body {
+            transition: background-color 0.3s;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .glass-card {
+            background: rgba(43, 43, 61, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #6C63FF, #FF6584);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1E1E2C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6C63FF;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-dark text-white font-sans antialiased p-4 md:p-8 min-h-screen">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-12">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-bold gradient-text">AI Manager</h1>
+                <p class="text-gray-400 mt-2 text-lg">Ваш центр управления AI-ключами</p>
+            </div>
+            <div class="flex gap-4 mt-4 md:mt-0">
+                <button id="addProviderBtn" 
+                    class="bg-primary hover:bg-opacity-80 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-primary/30">
+                    + Добавить провайдера
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats row (optional, for future) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="glass-card rounded-2xl p-5 text-center fade-in">
+                <p class="text-gray-400 text-sm">Всего ключей</p>
+                <p id="totalKeys" class="text-3xl font-bold text-white mt-1">0</p>
+            </div>
+            <div class="glass-card rounded-2xl p-5 text-center fade-in">
+                <p class="text-gray-400 text-sm">Баланс (сумма)</p>
+                <p id="totalBalance" class="text-3xl font-bold text-green-400 mt-1">$0</p>
+            </div>
+            <div class="glass-card rounded-2xl p-5 text-center fade-in">
+                <p class="text-gray-400 text-sm">Провайдеров</p>
+                <p id="providerCount" class="text-3xl font-bold text-primary mt-1">0</p>
+            </div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- Default cards will be injected by JS -->
+
+        </div>
+    </div>
+
+    <!-- Modal for adding/editing provider -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden transition-all duration-300">
+        <div class="glass-card rounded-2xl p-6 md:p-8 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modalTitle" class="text-2xl font-bold">Новый провайдер</h2>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <form id="providerForm" class="space-y-4">
+                <input type="hidden" id="editIndex" value="">
+                
+                <div>
+                    <label class="block text-gray-300 mb-1">Название провайдера / Модель</label>
+                    <select id="providerName" class="w-full bg-card border border-gray-600 rounded-xl p-3 text-white focus:ring-2 focus:ring-primary outline-none">
+                        <option value="">Выберите или введите вручную</option>
+                        <option value="OpenAI (GPT-4o)">OpenAI (GPT-4o)</option>
+                        <option value="OpenAI (GPT-3.5)">OpenAI (GPT-3.5)</option>
+                        <option value="Anthropic (Claude 3 Opus)">Anthropic (Claude 3 Opus)</option>
+                        <option value="Anthropic (Claude 3 Sonnet)">Anthropic (Claude 3 Sonnet)</option>
+                        <option value="Google AI (Gemini Pro)">Google AI (Gemini Pro)</option>
+                        <option value="Mistral AI (Large)">Mistral AI (Large)</option>
+                        <option value="Cohere (Command R+)">Cohere (Command R+)</option>
+                        <option value="Meta (Llama 3)">Meta (Llama 3)</option>
+                        <option value="DeepSeek">DeepSeek</option>
+                        <option value="Perplexity AI">Perplexity AI</option>
+                    </select>
+                    <input type="text" id="customProviderName" placeholder="Или введите своё название" class="w-full bg-card border border-gray-600 rounded-xl p-3 text-white mt-2 focus:ring-2 focus:ring-primary outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-gray-300 mb-1">Адрес сайта</label>
+                    <input type="url" id="siteUrl" placeholder="https://platform.openai.com" 
+                        class="w-full bg-card border border-gray-600 rounded-xl p-3 text-white focus:ring-2 focus:ring-primary outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-gray-300 mb-1">API-ключ</label>
+                    <div class="relative">
+                        <input type="password" id="apiKey" placeholder="sk-..." 
+                            class="w-full bg-card border border-gray-600 rounded-xl p-3 text-white focus:ring-2 focus:ring-primary outline-none pr-12">
+                        <button type="button" id="toggleKeyBtn" class="absolute right-3 top-3 text-gray-400 hover:text-white text-xl">👁️</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-300 mb-1">Остаток денег ($)</label>
+                    <input type="number" step="0.01" id="balance" placeholder="10.00" 
+                        class="w-full bg-card border border-gray-600 rounded-xl p-3 text-white focus:ring-2 focus:ring-primary outline-none">
+                </div>
+
+                <button type="submit" 
+                    class="w-full bg-primary hover:bg-opacity-80 text-white font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-primary/30 mt-4">
+                    Сохранить
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ================= STATE =================
+        let providers = JSON.parse(localStorage.getItem('aiProviders')) || [];
+
+        // Default providers if empty
+        if (providers.length === 0) {
+            providers = [
+                { name: 'OpenAI (GPT-4o)', site: 'https://platform.openai.com', key: 'sk-...', balance: '15.50' },
+                { name: 'Anthropic (Claude 3 Opus)', site: 'https://console.anthropic.com', key: 'sk-ant-...', balance: '42.00' },
+                { name: 'Google AI (Gemini Pro)', site: 'https://makersuite.google.com', key: 'AIza...', balance: '100.00' },
+            ];
+            saveToLocal();
+        }
+
+        // ================= DOM REFS =================
+        const container = document.getElementById('cardsContainer');
+        const modal = document.getElementById('modal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const addProviderBtn = document.getElementById('addProviderBtn');
+        const form = document.getElementById('providerForm');
+        const editIndex = document.getElementById('editIndex');
+        const providerName = document.getElementById('providerName');
+        const customProviderName = document.getElementById('customProviderName');
+        const siteUrl = document.getElementById('siteUrl');
+        const apiKey = document.getElementById('apiKey');
+        const balance = document.getElementById('balance');
+        const totalKeysEl = document.getElementById('totalKeys');
+        const totalBalanceEl = document.getElementById('totalBalance');
+        const providerCountEl = document.getElementById('providerCount');
+
+        // ================= FUNCTIONS =================
+        function saveToLocal() {
+            localStorage.setItem('aiProviders', JSON.stringify(providers));
+            updateStats();
+        }
+
+        function updateStats() {
+            totalKeysEl.textContent = providers.length;
+            const totalBal = providers.reduce((sum, p) => sum + (parseFloat(p.balance) || 0), 0);
+            totalBalanceEl.textContent = `$${totalBal.toFixed(2)}`;
+            providerCountEl.textContent = providers.length;
+        }
+
+        function renderCards() {
+            container.innerHTML = '';
+            if (providers.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-20 text-gray-500">
+                        <div class="text-6xl mb-4">📭</div>
+                        <p class="text-xl">Пока нет провайдеров</p>
+                        <button onclick="openAddModal()" class="mt-4 text-primary hover:underline">Добавить первый</button>
+                    </div>
+                `;
+                updateStats();
+                return;
+            }
+
+            providers.forEach((provider, index) => {
+                const card = document.createElement('div');
+                card.className = 'glass-card rounded-2xl p-6 fade-in hover:shadow-2xl transition-all duration-300 transform hover:scale-105';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-bold text-white truncate w-3/4">${provider.name}</h3>
+                        <div class="flex gap-2">
+                            <button onclick="editProvider(${index})" class="text-gray-400 hover:text-primary transition">✏️</button>
+                            <button onclick="deleteProvider(${index})" class="text-gray-400 hover:text-red-500 transition">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-sm text-gray-300">
+                        <div class="flex justify-between">
+                            <span>🌐 Сайт:</span>
+                            <a href="${provider.site}" target="_blank" class="text-primary hover:underline truncate ml-2">${provider.site}</a>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>🔑 API-ключ:</span>
+                            <span class="text-gray-500 font-mono truncate ml-2">${maskKey(provider.key)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>💰 Баланс:</span>
+                            <span class="text-green-400 font-semibold">$${parseFloat(provider.balance).toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="editProvider(${index})" class="text-xs text-gray-500 hover:text-primary transition">Обновить баланс</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            updateStats();
+        }
+
+        function maskKey(key) {
+            if (!key) return '...';
+            if (key.length <= 6) return key;
+            return key.slice(0, 4) + '...' + key.slice(-4);
+        }
+
+        function openAddModal(data = null) {
+            modal.classList.remove('hidden');
+            document.getElementById('modalTitle').textContent = data ? 'Редактировать провайдера' : 'Новый провайдер';
+            if (data) {
+                editIndex.value = data.index;
+                providerName.value = data.name;
+                customProviderName.value = '';
+                // Check if it's custom
+                const isCustom = !Array.from(providerName.options).some(opt => opt.value === data.name);
+                if (isCustom) {
+                    customProviderName.value = data.name;
+                    providerName.value = '';
+                }
+                siteUrl.value = data.site;
+                apiKey.value = data.key;
+                balance.value = data.balance;
+            } else {
+                editIndex.value = '';
+                providerName.value = '';
+                customProviderName.value = '';
+                siteUrl.value = '';
+                apiKey.value = '';
+                balance.value = '';
+            }
+        }
+
+        window.openAddModal = openAddModal;
+
+        function editProvider(index) {
+            const p = providers[index];
+            openAddModal({ index, name: p.name, site: p.site, key: p.key, balance: p.balance });
+        }
+
+        window.editProvider = editProvider;
+
+        function deleteProvider(index) {
+            if (confirm(`Удалить провайдера "${providers[index].name}"?`)) {
+                providers.splice(index, 1);
+                saveToLocal();
+                renderCards();
+            }
+        }
+
+        window.deleteProvider = deleteProvider;
+
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
+
+        // ================= EVENTS =================
+        addProviderBtn.addEventListener('click', () => openAddModal());
+
+        closeModalBtn.addEventListener('click', closeModal);
+
+        // Close modal on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Toggle key visibility
+        document.getElementById('toggleKeyBtn').addEventListener('click', () => {
+            const input = document.getElementById('apiKey');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        });
+
+        // Custom provider name logic
+        customProviderName.addEventListener('input', () => {
+            if (customProviderName.value) {
+                providerName.value = '';
+            }
+        });
+        providerName.addEventListener('change', () => {
+            if (providerName.value) {
+                customProviderName.value = '';
+            }
+        });
+
+        // Form submit
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = customProviderName.value || providerName.value;
+            const site = siteUrl.value;
+            const key = apiKey.value;
+            const bal = balance.value;
+
+            if (!name) {
+                alert('Пожалуйста, укажите название провайдера.');
+                return;
+            }
+            if (!site) {
+                alert('Пожалуйста, укажите адрес сайта.');
+                return;
+            }
+
+            const newProvider = {
+                name: name,
+                site: site,
+                key: key || 'не указан',
+                balance: parseFloat(bal) || 0
+            };
+
+            const idx = editIndex.value;
+            if (idx !== '') {
+                // Edit mode
+                providers[parseInt(idx)] = newProvider;
+            } else {
+                // Add mode
+                providers.push(newProvider);
+            }
+
+            saveToLocal();
+            renderCards();
+            closeModal();
+        });
+
+        // ================= INIT =================
+        renderCards();
+    </script>
+</body>
+</html>

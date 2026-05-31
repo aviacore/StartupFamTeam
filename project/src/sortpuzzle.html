@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SortPuzzle</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#f0f4ff,#e8edf5);padding:20px}
+.game{background:#fff;border-radius:28px;padding:32px;width:400px;max-width:100%;box-shadow:0 8px 40px rgba(0,20,60,0.08),0 2px 8px rgba(0,20,60,0.04)}
+h1{text-align:center;font-size:24px;font-weight:700;color:#1a2639;margin-bottom:2px;letter-spacing:-0.5px}
+.sub{text-align:center;font-size:12px;color:#8896ab;margin-bottom:20px}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;aspect-ratio:1;background:#f0f4ff;border-radius:16px;padding:6px;margin-bottom:16px}
+.tile{display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;border-radius:10px;cursor:pointer;transition:all 0.12s ease;user-select:none;background:#fff;color:#1a2639;box-shadow:0 2px 6px rgba(0,0,0,0.04),inset 0 1px 0 rgba(255,255,255,0.8)}
+.tile:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,20,60,0.1);background:#fff}
+.tile:active{transform:scale(0.96)}
+.tile.empty{background:transparent;box-shadow:none;cursor:default;color:transparent;pointer-events:none}
+.tile.win{animation:pop 0.4s ease;background:#e8f5e9;color:#2e7d32}
+.tile.correct{background:rgba(0,200,117,0.08);color:#00c875}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.stats{display:flex;justify-content:space-between;font-size:12px;color:#8896ab;margin-bottom:16px;padding:0 4px}
+.stats span{display:flex;align-items:center;gap:4px}
+.stats .val{color:#1a2639;font-weight:600;font-size:13px}
+.controls{display:flex;gap:8px}
+.controls button{flex:1;padding:11px;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s ease}
+.btn-new{background:#1a2639;color:#fff}
+.btn-new:hover{background:#2a3a55;transform:translateY(-1px)}
+.btn-auto{background:transparent;color:#1a2639;border:1.5px solid #d0d7e3}
+.btn-auto:hover{background:#f0f4ff;border-color:#1a2639}
+.btn-auto:disabled{opacity:0.3;cursor:not-allowed}
+#autoStatus{text-align:center;font-size:11px;color:#00c875;margin-top:12px;min-height:16px;font-weight:500}
+.size-select{display:flex;gap:6px;margin-bottom:14px;justify-content:center}
+.size-btn{padding:5px 14px;border-radius:8px;border:1.5px solid #d0d7e3;background:transparent;color:#8896ab;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.size-btn.active{background:#1a2639;color:#fff;border-color:#1a2639}
+.size-btn:hover:not(.active){border-color:#1a2639;color:#1a2639}
+</style>
+</head>
+<body>
+<div class="game">
+<h1>SortPuzzle</h1>
+<div class="sub">arrange tiles in order — choose your grid</div>
+<div class="size-select" id="sizeSelect">
+<button class="size-btn" onclick="setSize(3)">3×3</button>
+<button class="size-btn active" onclick="setSize(4)">4×4</button>
+<button class="size-btn" onclick="setSize(5)">5×5</button>
+</div>
+<div class="board" id="board"></div>
+<div class="stats">
+<span>Moves <span class="val" id="moveCnt">0</span></span>
+<span>Time <span class="val" id="timer">0:00</span></span>
+</div>
+<div class="controls">
+<button class="btn-new" onclick="newGame()">New Game</button>
+<button class="btn-auto" id="autoBtn" onclick="autoSolve()">Auto</button>
+</div>
+<div id="autoStatus"></div>
+</div>
+
+<script>
+let board=[], emptyIdx=0, moves=0, solving=false, intervals=[], size=4, gridSize=16, timerSec=0, timerIv=null;
+
+function setSize(n){
+  if(solving) return;
+  size=n; gridSize=n*n;
+  document.querySelectorAll('.size-btn').forEach((b,i)=>b.className='size-btn'+(i===n-3?' active':''));
+  newGame();
+}
+
+function init(){
+  board=Array.from({length:gridSize-1},(_,i)=>i+1); board.push(0); emptyIdx=gridSize-1;
+}
+
+function shuffle(){
+  for(let i=0;i<gridSize*10;i++){
+    const adj = getAdj(emptyIdx);
+    const r = adj[Math.floor(Math.random()*adj.length)];
+    [board[emptyIdx],board[r]]=[board[r],board[emptyIdx]];
+    emptyIdx=r;
+  }
+  if(!isSolvable()) shuffle();
+}
+
+function isSolvable(){
+  let inv=0, arr=board.filter(v=>v!==0);
+  for(let i=0;i<arr.length;i++) for(let j=i+1;j<arr.length;j++) if(arr[i]>arr[j]) inv++;
+  const rowFromBottom = size-1-Math.floor(emptyIdx/size);
+  if(size%2===0) return (inv+rowFromBottom)%2===0;
+  return inv%2===0;
+}
+
+function getAdj(i){
+  const r=Math.floor(i/size), c=i%size, a=[];
+  if(r>0) a.push(i-size);
+  if(r<size-1) a.push(i+size);
+  if(c>0) a.push(i-1);
+  if(c<size-1) a.push(i+1);
+  return a;
+}
+
+function render(){
+  const b=document.getElementById('board');
+  b.style.gridTemplateColumns='repeat('+size+',1fr)';
+  b.innerHTML='';
+  for(let i=0;i<gridSize;i++){
+    const d=document.createElement('div'); d.className='tile'+(board[i]===0?' empty':'');
+    if(board[i]){
+      d.textContent=board[i];
+      if(checkWin()) d.classList.add('correct');
+    }
+    d.onclick=()=>move(i);
+    b.appendChild(d);
+  }
+  document.getElementById('moveCnt').textContent=moves;
+  if(checkWin()){
+    clearInterval(timerIv);
+    setTimeout(()=>{
+      document.getElementById('autoStatus').textContent='Puzzle solved!';
+      document.getElementById('board').querySelectorAll('.tile:not(.empty)').forEach(t=>t.classList.add('win'));
+    },100);
+  }
+}
+
+function move(i){
+  if(solving) return;
+  if(!getAdj(emptyIdx).includes(i)) return false;
+  [board[emptyIdx],board[i]]=[board[i],board[emptyIdx]];
+  emptyIdx=i; moves++; render(); return true;
+}
+
+function checkWin(){
+  for(let i=0;i<gridSize-1;i++) if(board[i]!==i+1) return false;
+  return board[gridSize-1]===0;
+}
+
+function updateTimer(){
+  timerSec++;
+  const m=Math.floor(timerSec/60), s=timerSec%60;
+  document.getElementById('timer').textContent=m+':'+(s<10?'0':'')+s;
+}
+
+function newGame(){
+  intervals.forEach(clearInterval); intervals=[];
+  clearInterval(timerIv); timerSec=0; timerIv=null;
+  solving=false; moves=0;
+  document.getElementById('autoBtn').disabled=false;
+  document.getElementById('autoStatus').textContent='';
+  document.getElementById('timer').textContent='0:00';
+  init(); shuffle(); render();
+  timerIv=setInterval(updateTimer,1000);
+}
+
+function autoSolve(){
+  if(solving||checkWin()) return;
+  solving=true;
+  const btn=document.getElementById('autoBtn'); btn.disabled=true;
+  const st=document.getElementById('autoStatus'); st.textContent='Searching...';
+
+  const goal={};
+  for(let i=0;i<gridSize;i++) goal[i+1]={r:Math.floor(i/size),c:i%size};
+  goal[0]={r:size-1,c:size-1};
+
+  function h(b){
+    let d=0;
+    for(let i=0;i<gridSize;i++)
+      if(b[i]){const g=goal[b[i]];d+=Math.abs(Math.floor(i/size)-g.r)+Math.abs(i%size-g.c);}
+    return d;
+  }
+
+  let solution=null;
+  const startB=board.slice(), startE=emptyIdx;
+  const limit=120;
+
+  function key(b){return b.join(',');}
+
+  function dfs(b,e,g,bound,path,visited){
+    const f=g+h(b);
+    if(f>bound) return f;
+    if(e===gridSize-1){
+      let ok=true;
+      for(let i=0;i<gridSize-1;i++) if(b[i]!==i+1){ok=false;break;}
+      if(ok){solution=[...path];return -1;}
+    }
+    let next=Infinity;
+    const adj=getAdj(e);
+    for(const n of adj){
+      if(path.length>0){const last=path[path.length-1]; if(n===last.from) continue;}
+      const nb=b.slice();
+      [nb[e],nb[n]]=[nb[n],nb[e]];
+      const nk=key(nb);
+      if(visited.has(nk)) continue;
+      visited.add(nk);
+      const maxStates=size===3?200000:size===4?500000:800000;
+      if(visited.size>maxStates){visited.delete(nk);continue;}
+      path.push({from:e,to:n});
+      const t=dfs(nb,n,g+1,bound,path,visited);
+      if(t===-1) return -1;
+      if(t<next) next=t;
+      path.pop();
+      visited.delete(nk);
+    }
+    return next;
+  }
+
+  let bound=h(startB);
+  while(!solution && bound<=limit){
+    st.textContent='Searching bound='+bound;
+    const v=new Set(); v.add(key(startB));
+    bound=dfs(startB,startE,0,bound,[],v);
+    if(typeof bound!=='number'||bound===Infinity) break;
+  }
+
+  if(!solution){
+    st.textContent='Not found'; solving=false; btn.disabled=false; return;
+  }
+
+  st.textContent='Solving ('+solution.length+' moves)...';
+  board=startB.slice(); emptyIdx=startE; moves=0; render();
+  let step=0;
+  const speed=size===3?40:size===4?60:100;
+  const iv=setInterval(()=>{
+    if(step>=solution.length){
+      clearInterval(iv); solving=false; btn.disabled=false;
+      st.textContent='Solved!'; render(); return;
+    }
+    const{to}=solution[step];
+    [board[emptyIdx],board[to]]=[board[to],board[emptyIdx]];
+    emptyIdx=to; moves++; render(); step++;
+    if(step%5===0) st.textContent='Solving ('+step+'/'+solution.length+')...';
+  },speed);
+  intervals.push(iv);
+}
+
+newGame();
+</script>
+</body>
+</html>

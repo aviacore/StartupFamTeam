@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CraftStack v2 — AI Agent Workbench</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#07070d;--bg2:#0d0d1a;--card:rgba(20,20,40,0.6);--card-border:rgba(255,255,255,0.06);--text:#e8e8f0;--text2:#8888a0;--text3:#555570;--accent1:#6c5ce7;--accent1-dim:rgba(108,92,231,0.15);--accent2:#00cec9;--accent2-dim:rgba(0,206,201,0.12);--accent3:#fd79a8;--accent4:#fdcb6e;--green:#00b894;--green-dim:rgba(0,184,148,0.15)}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* ─── GLOW ORB ─── */
+.orb{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;opacity:0.15}
+.orb-1{top:-200px;left:-200px;background:var(--accent1)}
+.orb-2{bottom:-200px;right:-200px;background:var(--accent2)}
+
+/* ─── HERO ─── */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;background:var(--accent2-dim);border:1px solid rgba(0,206,201,0.2);font-size:12px;font-weight:500;color:var(--accent2);margin-bottom:20px}
+.hero h1{font-size:72px;font-weight:900;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-3px;margin-bottom:12px;line-height:1}
+.hero .subtitle{font-size:20px;color:var(--text2);max-width:540px;line-height:1.6;margin-bottom:32px}
+.hero-stats{display:flex;gap:40px;margin-bottom:36px}
+.hero-stat{text-align:center}
+.hero-stat .num{font-size:36px;font-weight:800;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-stat .lbl{font-size:12px;color:var(--text2);margin-top:4px}
+.btn-group{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn{padding:14px 32px;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.2s;cursor:pointer;border:none;font-family:'Inter',sans-serif}
+.btn-primary{background:linear-gradient(135deg,var(--accent1),#8b7cf7);color:#fff;box-shadow:0 4px 24px rgba(108,92,231,0.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(108,92,231,0.4)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.15)}
+.btn-ghost:hover{background:rgba(255,255,255,0.05)}
+
+/* ─── SECTIONS ─── */
+section{padding:80px 20px;position:relative;z-index:1}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--accent1);margin-bottom:8px}
+section h2{font-size:36px;font-weight:700;margin-bottom:12px;letter-spacing:-1px}
+section h2+p{font-size:16px;color:var(--text2);max-width:600px;margin-bottom:40px;line-height:1.6}
+
+/* ─── ARCH CARD ─── */
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.arch-card{padding:28px;border-radius:16px;background:var(--card);backdrop-filter:blur(20px);border:1px solid var(--card-border);transition:all 0.3s}
+.arch-card:hover{transform:translateY(-2px);border-color:rgba(108,92,231,0.2)}
+.arch-card .icon{font-size:28px;margin-bottom:12px;display:block}
+.arch-card h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.arch-card p{font-size:13px;color:var(--text2);line-height:1.6}
+.arch-card ul{list-style:none;margin-top:10px}
+.arch-card ul li{padding:4px 0;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.arch-card ul li::before{content:'→';color:var(--accent2);font-weight:700}
+
+/* ─── PIPELINE ─── */
+.pipe-vis{display:flex;gap:0;border-radius:12px;border:1px solid var(--card-border);background:var(--card);overflow:hidden;flex-wrap:wrap}
+.pipe-step{flex:1;padding:20px;text-align:center;min-width:100px;position:relative}
+.pipe-step:not(:last-child)::after{content:'→';position:absolute;right:-6px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:20px}
+.pipe-step .pi{font-size:24px;margin-bottom:6px}
+.pipe-step .pn{font-size:13px;font-weight:600}
+.pipe-step .pa{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* ─── PROV GRID ─── */
+.prov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.prov-card{padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--card-border);text-align:center;transition:all 0.2s}
+.prov-card:hover{border-color:rgba(108,92,231,0.2)}
+.prov-card .pi{font-size:24px;margin-bottom:8px}
+.prov-card .pn{font-size:13px;font-weight:600;margin-bottom:4px}
+.prov-card .pp{font-size:11px;color:var(--text2)}
+.prov-card .tag{display:inline-block;padding:2px 10px;border-radius:6px;font-size:9px;font-weight:600;margin-top:8px}
+.tag-free{background:var(--green-dim);color:var(--green)}
+.tag-paid{background:rgba(253,121,168,0.15);color:var(--accent3)}
+
+/* ─── TEAM ─── */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.team-card{padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--card-border);display:flex;align-items:center;gap:14px;transition:all 0.2s}
+.team-card:hover{border-color:rgba(108,92,231,0.2)}
+.team-card .av{font-size:28px;flex-shrink:0}
+.team-card .ti{flex:1}
+.team-card .ti .tn{font-size:14px;font-weight:600}
+.team-card .ti .tr{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* ─── MONITOR DEMO ─── */
+.mon-preview{padding:24px;border-radius:16px;background:rgba(0,0,0,0.35);border:1px solid var(--card-border)}
+.mon-preview .mon-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.mon-preview .mon-header .mm{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.mon-preview .mon-header .mm small{font-size:11px;font-weight:400;color:var(--text2)}
+.pip-demo{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.pip-d{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:11px}
+.pip-d.done{background:var(--green-dim);color:var(--green)}
+.pip-d.active{background:rgba(0,206,201,0.12);color:var(--accent2);animation:glow 1.5s infinite}
+.pip-d.wait{background:var(--card);color:var(--text3)}
+@keyframes glow{0%,100%{box-shadow:none}50%{box-shadow:0 0 12px rgba(0,206,201,0.15)}}
+.mon-log{background:rgba(0,0,0,0.3);border-radius:8px;padding:10px;font-size:11px;color:var(--text2);max-height:120px;overflow-y:auto;font-family:monospace;line-height:1.6}
+
+/* ─── FOOTER ─── */
+footer{text-align:center;padding:40px 20px;border-top:1px solid var(--card-border);color:var(--text3);font-size:13px;position:relative;z-index:1}
+
+/* ─── RESP ─── */
+@media(max-width:640px){
+  .hero h1{font-size:42px;letter-spacing:-2px}
+  .hero .subtitle{font-size:16px}
+  .hero-stats{gap:20px}
+  .hero-stat .num{font-size:26px}
+  section h2{font-size:26px}
+  .pipe-step:not(:last-child)::after{display:none}
+}
+</style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">⚡ v0.2 · Open Source</div>
+  <h1>CraftStack</h1>
+  <p class="subtitle">Виртуальная компания AI-агентов. Ставь задачу — команда делает проект от идеи до результата.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">8</div><div class="lbl">AI-агентов</div></div>
+    <div class="hero-stat"><div class="num">5</div><div class="lbl">провайдеров</div></div>
+    <div class="hero-stat"><div class="num">6</div><div class="lbl">шагов пайплайна</div></div>
+    <div class="hero-stat"><div class="num">0₽</div><div class="lbl">бесплатно</div></div>
+  </div>
+  <div class="btn-group">
+    <a href="../dashboard.html" class="btn btn-primary">🚀 Открыть дашборд</a>
+    <a href="#about" class="btn btn-ghost">Подробнее ↓</a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="section-label">ℹ️ О проекте</div>
+    <h2>Что такое CraftStack?</h2>
+    <p>Фреймворк для создания и управления AI-агентами, которые работают цепочкой. CEO — это ты. Остальные агенты выполняют задачи по своим навыкам.</p>
+    <div class="arch-grid">
+      <div class="arch-card">
+        <span class="icon">👑</span>
+        <h3>CEO = ты</h3>
+        <p>Ставишь задачи верхнего уровня. Решаешь, какой агент когда подключается.</p>
+      </div>
+      <div class="arch-card">
+        <span class="icon">🤖</span>
+        <h3>8 AI-агентов</h3>
+        <p>Каждый со своей ролью, скиллами и зоной ответственности. От CEO до QA.</p>
+        <ul><li>🏛️ CEO — стратегия</li><li>📋 PM — задачи</li><li>🔧 CTO — архитектура</li><li>💻 Developer — код</li><li>🎨 Designer — дизайн</li><li>📢 Marketer — лендинг</li><li>🧪 QA — тесты</li><li>💰 Analyst — метрики</li></ul>
+      </div>
+      <div class="arch-card">
+        <span class="icon">🔌</span>
+        <h3>Любые AI-модели</h3>
+        <p>Бесплатные провайдеры — основные, платные — опционально. Переключение одной кнопкой.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section>
+  <div class="section-inner">
+    <div class="section-label">🔧 Pipeline</div>
+    <h2>Как это работает</h2>
+    <p>Каждый проект проходит цепочку агентов. Результат каждого шага — файлы в папке project/.</p>
+    <div class="pipe-vis">
+      <div class="pipe-step"><div class="pi">💡</div><div class="pn">Идея</div><div class="pa">CEO</div></div>
+      <div class="pipe-step"><div class="pi">📋</div><div class="pn">План</div><div class="pa">PM</div></div>
+      <div class="pipe-step"><div class="pi">🔧</div><div class="pn">Архитектура</div><div class="pa">CTO</div></div>
+      <div class="pipe-step"><div class="pi">💻</div><div class="pn">Разработка</div><div class="pa">Developer</div></div>
+      <div class="pipe-step"><div class="pi">🎨</div><div class="pn">Дизайн</div><div class="pa">Designer</div></div>
+      <div class="pipe-step"><div class="pi">🚀</div><div class="pn">Запуск</div><div class="pa">Marketer</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section>
+  <div class="section-inner">
+    <div class="section-label">👥 Команда</div>
+    <h2>AI-агенты</h2>
+    <p>Каждый агент — это OpenCode mode с ролью, скиллами и доступом к файлам.</p>
+    <div class="team-grid">
+      <div class="team-card"><div class="av">🏛️</div><div class="ti"><div class="tn">CEO</div><div class="tr">Стратегия, бизнес-модель</div></div></div>
+      <div class="team-card"><div class="av">📋</div><div class="ti"><div class="tn">PM</div><div class="tr">Задачи, требования</div></div></div>
+      <div class="team-card"><div class="av">🔧</div><div class="ti"><div class="tn">CTO</div><div class="tr">Архитектура, технологии</div></div></div>
+      <div class="team-card"><div class="av">💻</div><div class="ti"><div class="tn">Developer</div><div class="tr">Фулстек, прототипы</div></div></div>
+      <div class="team-card"><div class="av">🎨</div><div class="ti"><div class="tn">Designer</div><div class="tr">UI/UX, визуал</div></div></div>
+      <div class="team-card"><div class="av">📢</div><div class="ti"><div class="tn">Marketer</div><div class="tr">Лендинги, маркетинг</div></div></div>
+      <div class="team-card"><div class="av">🧪</div><div class="ti"><div class="tn">QA</div><div class="tr">Тестирование</div></div></div>
+      <div class="team-card"><div class="av">💰</div><div class="ti"><div class="tn">Analyst</div><div class="tr">Юнит-экономика</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROVIDERS -->
+<section>
+  <div class="section-inner">
+    <div class="section-label">🔌 Провайдеры</div>
+    <h2>Подключение к AI</h2>
+    <p>Бесплатные модели — основа. Платные — для тяжёлых задач.</p>
+    <div class="prov-grid">
+      <div class="prov-card"><div class="pi">⭐</div><div class="pn">DeepSeek V4 Flash</div><div class="pp">Основная модель</div><span class="tag tag-free">FREE</span></div>
+      <div class="prov-card"><div class="pi">🔮</div><div class="pn">Gemini 2.0 Flash</div><div class="pp">Google free tier</div><span class="tag tag-free">FREE</span></div>
+      <div class="prov-card"><div class="pi">🌐</div><div class="pn">OpenRouter</div><div class="pp">Multi-model proxy</div><span class="tag tag-free">FREE</span></div>
+      <div class="prov-card"><div class="pi">🌬️</div><div class="pn">Mistral AI</div><div class="pp">Free tier</div><span class="tag tag-free">FREE</span></div>
+      <div class="prov-card"><div class="pi">🐙</div><div class="pn">GitHub Models</div><div class="pp">Microsoft free</div><span class="tag tag-free">FREE</span></div>
+      <div class="prov-card"><div class="pi">🤖</div><div class="pn">OpenAI</div><div class="pp">GPT-4o, o3-mini</div><span class="tag tag-paid">PAID</span></div>
+      <div class="prov-card"><div class="pi">🌀</div><div class="pn">Anthropic</div><div class="pp">Claude Sonnet/Opus</div><span class="tag tag-paid">PAID</span></div>
+      <div class="prov-card"><div class="pi">🔮</div><div class="pn">Google Pro</div><div class="pp">Gemini Pro/Ultra</div><span class="tag tag-paid">PAID</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MONITOR -->
+<section>
+  <div class="section-inner">
+    <div class="section-label">📡 Мониторинг</div>
+    <h2>Процесс в реальном времени</h2>
+    <p>Дашборд показывает текущий статус: кто работает, что сделано, лог операций. Обновление каждые 10 секунд.</p>
+    <div class="mon-preview">
+      <div class="mon-header">
+        <div class="mm">🏛️ CEO <small>— пишет бизнес-план</small></div>
+        <span style="font-size:11px;color:var(--accent2);display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:glow 1.5s infinite"></span> running</span>
+      </div>
+      <div class="pip-demo">
+        <span class="pip-d done">🏛️ CEO ✅</span>
+        <span class="pip-d done">📋 PM ✅</span>
+        <span class="pip-d done">🔧 CTO ✅</span>
+        <span class="pip-d active">💻 Developer ⏳</span>
+        <span class="pip-d wait">🎨 Designer ○</span>
+        <span class="pip-d wait">📢 Marketer ○</span>
+      </div>
+      <div class="mon-log">
+        <div>14:20 🚀 Новая задача</div>
+        <div>14:20 🏛️ CEO: утверждён план</div>
+        <div>14:21 📋 PM: задачи готовы</div>
+        <div>14:21 🔧 CTO: архитектура выбрана</div>
+        <div>14:22 💻 Developer: пишу код...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  CraftStack — проект с открытым исходным кодом. Работает на OpenCode + DeepSeek + ❤️
+</footer>
+</body>
+</html>

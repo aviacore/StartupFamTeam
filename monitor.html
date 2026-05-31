@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CraftStack Monitor</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#07070d;color:#e8e8f0;padding:16px;max-width:680px;margin:0 auto}
+h1{font-size:16px;margin-bottom:2px;display:flex;align-items:center;gap:8px}
+.info{font-size:10px;color:#8888a0;display:flex;justify-content:space-between;margin-bottom:10px}
+.card{background:rgba(20,20,40,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.section-title{font-size:9px;color:#8888a0;text-transform:uppercase;margin-bottom:4px;display:flex;justify-content:space-between}
+.scroll{max-height:120px;overflow-y:auto;font-size:11px;line-height:1.5}
+.scroll::-webkit-scrollbar{width:3px}
+.scroll::-webkit-scrollbar-thumb{background:#555570;border-radius:3px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.f{flex:1}
+.f .l{font-size:9px;color:#8888a0;text-transform:uppercase}
+.f .v{font-size:14px;font-weight:700;margin-top:1px}
+.pips{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0}
+.pip{padding:2px 8px;border-radius:5px;font-size:10px;border:1px solid transparent}
+.pip.done{background:rgba(0,184,148,0.15);color:#00b894;border-color:rgba(0,184,148,0.2)}
+.pip.run{background:rgba(0,206,201,0.12);color:#00cec9;border-color:rgba(0,206,201,0.2)}
+.pip.wait{background:rgba(20,20,40,0.6);color:#555570;border-color:rgba(255,255,255,0.06)}
+.pip.error{background:rgba(214,48,49,0.12);color:#d63031;border-color:rgba(214,48,49,0.2)}
+.log{background:rgba(0,0,0,0.2);border-radius:6px;padding:6px 8px}
+.log div{padding:1px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.log .tm{color:#555570;margin-right:4px}
+.log .ag{color:#6c5ce7;margin-right:4px}
+.log .tx{color:#8888a0}
+.files{display:flex;flex-direction:column;gap:2px}
+.file-row{display:flex;justify-content:space-between;align-items:center;padding:3px 6px;border-radius:4px;background:rgba(0,0,0,0.15);font-size:11px}
+.file-row:hover{background:rgba(0,0,0,0.3)}
+.file-row .fn{color:#00cec9;text-decoration:none}
+.file-row .fn:hover{text-decoration:underline}
+.file-row .fs{color:#555570;font-size:9px}
+.btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:6px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;text-decoration:none;border:none}
+.btn-p{background:linear-gradient(135deg,#6c5ce7,#8b7cf7);color:#fff}
+.btn-g{background:transparent;color:#8888a0;border:1px solid rgba(255,255,255,0.06)}
+.conn{display:inline-flex;align-items:center;gap:4px;font-size:9px;padding:2px 6px;border-radius:5px}
+.conn.on{background:rgba(0,184,148,0.15);color:#00b894}
+.conn.off{background:rgba(214,48,49,0.12);color:#d63031}
+</style>
+</head>
+<body>
+<h1>CraftStack <span style="font-size:11px;font-weight:400;color:#8888a0">v0.5</span> <span class="conn off" id="connBadge">offline</span></h1>
+<div class="info"><span id="curTime">—</span><span id="statusTag">idle</span></div>
+
+<div class="card">
+  <div class="row">
+    <div class="f"><div class="l">Agent</div><div class="v" id="agentEl">—</div></div>
+    <div class="f" style="flex:2"><div class="l">Task</div><div class="v" id="taskEl" style="font-size:12px;font-weight:400;color:#8888a0">—</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title"><span>Progress</span><span id="pipCount">0</span></div>
+  <div class="pips" id="pips"></div>
+</div>
+
+<div class="card">
+  <div class="section-title"><span>Log</span><span id="logCount">0</span></div>
+  <div class="scroll log" id="log"></div>
+</div>
+
+<div class="card">
+  <div class="section-title"><span>Output Files</span><span id="fileCount">0</span></div>
+  <div class="scroll" id="filesList"><div style="color:#555570;padding:8px;text-align:center;font-size:11px">Нет файлов</div></div>
+</div>
+
+<div class="btns">
+  <a href="dashboard.html" class="btn btn-p">← Dashboard</a>
+  <a href="project/card.html" class="btn btn-g" target="_blank">🌐 Лендинг</a>
+</div>
+
+<script id="stateData" type="application/json">
+{"task":"—","status":"idle","currentAgent":"-","progress":{},"log":[{"time":"","agent":"system","text":"CraftStack ready"}]}
+</script>
+
+<script>
+const em={dev:'[D]',des:'[Ds]',mrk:'[M]',qa:'[Q]',anl:'[A]',system:'[S]'};
+const nm={dev:'Developer',des:'Designer',mrk:'Marketer',qa:'QA',anl:'Analyst',system:'System'};
+const conn = document.getElementById('connBadge');
+
+function render(d){
+  const hasTask = d.task && d.task.length > 5 && d.task !== '—';
+  document.getElementById('taskEl').textContent = d.task||'—';
+  document.getElementById('taskEl').style.color = hasTask ? '#e8e8f0' : '#8888a0';
+  document.getElementById('agentEl').textContent = d.currentAgent ? (em[d.currentAgent]||'')+' '+(nm[d.currentAgent]||d.currentAgent) : '—';
+  const pi = document.getElementById('pips');
+  const pm = d.progress||{};
+  const pips = Object.keys(pm);
+  document.getElementById('pipCount').textContent = pips.length;
+  if(pips.length===0){
+    pi.innerHTML = hasTask ? '<span class="pip wait">⏳ waiting</span>' : '<span style="color:#555570;font-size:10px">—</span>';
+  } else {
+    pi.innerHTML = pips.map(k=>{
+      const p = pm[k];
+      const s = p.status==='done'?'done':p.status==='running'?'run':p.status==='error'?'error':'wait';
+      const i = p.status==='done'?'✅':p.status==='running'?'⟳':p.status==='error'?'❌':'⏳';
+      return '<span class="pip '+s+'">'+(em[k]||k)+' '+(nm[k]||k)+' '+i+'</span>';
+    }).join('');
+  }
+  const lo = document.getElementById('log');
+  const logs = d.log||[];
+  document.getElementById('logCount').textContent = logs.length;
+  if(logs.length===0){ lo.innerHTML='<div style="color:#555570">—</div>'; }
+  else {
+    lo.innerHTML = logs.slice(-30).map(l=>
+      '<div><span class="tm">'+l.time+'</span><span class="ag">'+(em[l.agent]||l.agent||'')+'</span><span class="tx">'+l.text+'</span></div>'
+    ).join('');
+    lo.scrollTop = lo.scrollHeight;
+  }
+  document.getElementById('statusTag').textContent = d.status||'idle';
+}
+
+function loadFiles(){
+  fetch('/api/files').then(r=>r.json()).then(files=>{
+    const el = document.getElementById('filesList');
+    const cnt = document.getElementById('fileCount');
+    const f = files.filter(x=>!x.path.includes('.craftstack')&&!x.name.startsWith('.'));
+    cnt.textContent = f.length;
+    if(!f.length){ el.innerHTML='<div style="color:#555570;padding:8px;text-align:center;font-size:11px">Нет файлов</div>'; return; }
+    el.innerHTML = f.map(x=>'<div class="file-row"><a class="fn" href="'+x.path+'" target="_blank">📄 '+x.name+'</a><span class="fs">'+x.size+'</span></div>').join('');
+  }).catch(()=>{});
+}
+
+try{ const data = JSON.parse(document.getElementById('stateData').textContent); if(data.task&&data.task!=='—') render(data); }catch(e){}
+
+if(location.protocol!=='file:'){
+  const es = new EventSource('/events');
+  es.onmessage = function(e){ try{ const d = JSON.parse(e.data); render(d); conn.className='conn on'; conn.textContent='live'; }catch(err){} };
+  es.onerror = function(){ conn.className='conn off'; conn.textContent='offline'; es.close(); setTimeout(()=>{ location.reload(); }, 5000); };
+} else { conn.className='conn off'; conn.textContent='offline'; setTimeout(()=>{ location.reload(); }, 5000); }
+
+loadFiles();
+setInterval(loadFiles, 10000);
+</script>
+</body>
+</html>
