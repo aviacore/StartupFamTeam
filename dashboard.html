@@ -1230,6 +1230,14 @@ function checkServer(){
       _logFrom = 0;
     }
 
+    // Merge server-side provider status into _providerHealth
+    if (s.provider_status) {
+      for (const [prov, status] of Object.entries(s.provider_status)) {
+        _providerHealth[prov] = status;
+      }
+      localStorage.setItem('ph_status', JSON.stringify(_providerHealth));
+    }
+
     // Update routing from state (prefer pipeline_routing if running, else routing.json)
     if (s.pipeline_routing) { agentRouting = s.pipeline_routing; }
     else if (s.routing) { agentRouting = s.routing; }

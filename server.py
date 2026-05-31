@@ -100,10 +100,20 @@ def default_state():
         "phase": "idle",
         "task": "",
         "progress": {},
+        "provider_status": {},
         "log": [
             {"time": time.strftime("%H:%M"), "agent": "system", "text": "CraftStack AI server started"}
         ]
     }
+
+def update_provider_status(provider, status):
+    """Track provider health in state (ok/error/timeout/nobill). No deadlock: read_state/write_state handle locking."""
+    try:
+        s = read_state()
+        s.setdefault('provider_status', {})[provider] = status
+        write_state(s)
+    except:
+        pass
 
 def read_state():
     with state_lock:
@@ -749,14 +759,25 @@ def run_agent(slug, task_text, shared_context, idx, total, is_short, ts, request
             add_log(slug, f'✅ Wrote final {root_name} to project root')
 
             set_progress(slug, 'done', provider=provider)
+            update_provider_status(provider, 'ok')
             return f"\n\n### {agent_name} (via {provider})\n{response}", True
 
         except urllib.error.HTTPError as e:
             body = e.read().decode('utf-8', errors='replace')
             last_error = f'HTTP {e.code}: {body[:200]}'
+            err_lower = last_error.lower()
+            if 'credit' in err_lower or 'balance' in err_lower or 'billing' in err_lower or 'quota' in err_lower or 'exceeded' in err_lower:
+                update_provider_status(provider, 'nobill')
+            else:
+                update_provider_status(provider, 'error')
             add_log(slug, f'❌ {provider} error, trying next: {last_error}')
         except Exception as e:
             last_error = str(e)[:200]
+            err_lower = last_error.lower()
+            if 'timed out' in err_lower or 'timeout' in err_lower:
+                update_provider_status(provider, 'timeout')
+            else:
+                update_provider_status(provider, 'error')
             add_log(slug, f'❌ {provider} failed, trying next: {last_error}')
 
     # All providers failed
@@ -1261,6 +1282,7 @@ class Handler(BaseHTTPRequestHandler):
                 write_agents(agents)
             # Clear stale state from previous run
             s['progress'] = {}
+            s['provider_status'] = {}
             s['graph'] = []
             s['pipeline_routing'] = {}
             s['chat'] = []
