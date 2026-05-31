@@ -50,7 +50,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:10p
 .agent-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;transition:all 0.15s;user-select:none;border:1px solid transparent;margin-bottom:2px}
 .agent-item:hover{background:var(--card);border-color:var(--card-border)}
 .agent-item.on{border-color:var(--card-border-hover)}
-.agent-item .chk{width:17px;height:17px;border-radius:4px;border:2px solid var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;font-size:9px;color:transparent}
+.agent-item .chk{width:17px;height:17px;border-radius:4px;border:2px solid var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;font-size:9px;color:var(--text3)}
 .agent-item.on .chk{background:var(--accent1);border-color:var(--accent1);color:#fff}
 .agent-item .av{font-size:16px;flex-shrink:0}
 .agent-item .inf{flex:1;min-width:0}
@@ -626,7 +626,7 @@ function renderAgents(spec){
     if(currSpec!=='all' && a.sp!==currSpec) return;
     const on = onAgents.has(a.id);
     const d = document.createElement('div');
-    d.className = 'agent-item'+(on?' on':'');
+    d.className = 'agent-item'+(on || execStatus ? ' on':'');
     d.dataset.slug = a.id;
     const provId = getAgentProvider(a.id);
     const provLabel = getProviderLabel(provId);
@@ -650,7 +650,7 @@ function renderAgents(spec){
       mdText = t('off');
     }
     d.innerHTML = `
-      <div class="chk">${on?'✓':''}</div>
+      <div class="chk">${on || execStatus ? '✓' : ''}</div>
       <div class="av">${a.em}</div>
       <div class="inf"><div class="nm">${a.nm}</div><div class="rl">${a.rl}</div></div>
       <span class="pr-badge"><span class="pr-dot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${dotColor};margin-right:4px;vertical-align:middle;box-shadow:0 0 3px ${dotColor}66" title="${provStatus==='ok'?'Connected':provStatus==='nobill'?'Needs billing':'Unknown'}"></span>${provLabel}</span>
