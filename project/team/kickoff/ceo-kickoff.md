@@ -1,3 +1,28 @@
 # CEO — Kickoff
 
-Я прошу прощения, но не вижу конкретной задачи, которую нужно решить. Пожалуйста, уточни, какой именно вопрос или задачу необходимо выполнить в контексте проекта CraftStack.
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+</head>
+
+<body>
+    <h1>Регистрация</h1>
+    <form>
+        <label for="name">Имя:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+        
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+        
+        <label for="password">Пароль:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+        
+        <button type="submit">Регистрация</button>
+    </form>
+</body>
+
+</html>

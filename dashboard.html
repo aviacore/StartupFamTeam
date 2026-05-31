@@ -1248,7 +1248,14 @@ function checkServer(){
     const as = document.getElementById('agentStatus');
     as.textContent = '👤 '+(s.currentAgent&&s.currentAgent!=='-'?s.currentAgent:'—');
 
-    if(s.status==='done'){ fetchResults(); } // grab results when pipeline completes
+    if(s.status==='done'){
+      fetchResults();
+      if (window._lastStatus !== 'done') {
+        showMsg('✅ Пайплайн завершён! Результат в разделе Результаты');
+      }
+    }
+
+    window._lastStatus = s.status;
 
     // Update big status card
     const sb = document.getElementById('statusBadge');

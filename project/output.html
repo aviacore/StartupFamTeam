@@ -1,114 +1,26 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Крестики-нолики с самообучением</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 5px;
-        }
-        .cell {
-            width: 100px;
-            height: 100px;
-            background-color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        @media print {
-            body {
-                background-color: #fff;
-            }
-            .cell {
-                border: solid 1px black;
-            }
-        }
-    </style>
+    <title>Регистрация</title>
 </head>
+
 <body>
-
-<div id="game" class="board">
-    <div data-index="0" class="cell"></div>
-    <div data-index="1" class="cell"></div>
-    <div data-index="2" class="cell"></div>
-    <div data-index="3" class="cell"></div>
-    <div data-index="4" class="cell"></div>
-    <div data-index="5" class="cell"></div>
-    <div data-index="6" class="cell"></div>
-    <div data-index="7" class="cell"></div>
-    <div data-index="8" class="cell"></div>
-</div>
-
-<button id="restart" class="button">Начать новый раунд</button>
-<button id="learn" class="button">Обучить игру</button>
-
-<script>
-    const board = document.getElementById('game');
-    const restartButton = document.getElementById('restart');
-    const learnButton = document.getElementById('learn');
-    let currentPlayer = 'X';
-    let boardState = Array(9).fill(null);
-    let winPatterns = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],
-        [0, 4, 8], [2, 4, 6]
-    ];
-
-    board.addEventListener('click', (event) => {
-        const index = event.target.dataset.index;
-        if (!index || boardState[index]) return;
-
-        boardState[index] = currentPlayer;
-        event.target.textContent = currentPlayer;
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-        checkWinner();
-    });
-
-    restartButton.addEventListener('click', () => {
-        boardState.fill(null);
-        [...board.children].forEach(cell => cell.textContent = '');
-        currentPlayer = 'X';
-    });
-
-    learnButton.addEventListener('click', () => {
-        alert('Игра обучена на основе предыдущих игр!');
-    });
-
-    function checkWinner() {
-        for (let pattern of winPatterns) {
-            const [a, b, c] = pattern;
-            if (boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c]) {
-                alert(`${boardState[a]} победил!`);
-                return;
-            }
-        }
-
-        if (boardState.every(cell => cell)) {
-            alert('Ничья!');
-        }
-    }
-</script>
-
+    <h1>Регистрация</h1>
+    <form>
+        <label for="name">Имя:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+        
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+        
+        <label for="password">Пароль:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+        
+        <button type="submit">Регистрация</button>
+    </form>
 </body>
+
 </html>
