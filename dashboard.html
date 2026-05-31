@@ -1119,11 +1119,12 @@ function fetchChat(){
     if (inp) inp.placeholder = hasPending ? '✏️ Напиши ответ...' : 'Ожидание вопроса от пайплайна...';
     if (btn) btn.disabled = !hasPending;
     if (wrap) wrap.classList.toggle('chat-waiting', hasPending);
-    if (hasPending) {
-      inp.focus();
-      body.scrollTop = body.scrollHeight;
+    const key = JSON.stringify(msgs);
+    if (key !== window._lastChatKey) {
+      window._lastChatKey = key;
+      renderChat(msgs, d.pending_question);
     }
-    renderChat(msgs, d.pending_question);
+    if (hasPending) { inp && inp.focus(); body.scrollTop = body.scrollHeight; }
   }).catch(()=>{});
 }
 
@@ -1153,7 +1154,9 @@ function renderChat(msgs, pendingQ) {
       </div>
     </div>`;
   }
-  body.scrollTop = body.scrollHeight;
+  if (body.scrollTop + body.clientHeight >= body.scrollHeight - 20) {
+    body.scrollTop = body.scrollHeight;
+  }
 }
 
 function sendChatAnswer() {
