@@ -266,30 +266,33 @@ function testProv(pid){
     setKey(pid, keyInp.value.trim());
     fetch('/api/keys', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({keys})}).catch(()=>{});
   }
-  fetch('/api/check-provider', {
+  fetch('/api/providers/test', {
     method:'POST', headers:{'Content-Type':'application/json'},
     body:JSON.stringify({provider: pid})
   }).then(r=>r.json()).then(d=>{
     if(d.ok){
       _providerStatus[pid] = 'ok'; saveProviderStatus();
-      alert('✅ '+pid+' OK ('+d.elapsed+'s)\n\n'+d.response.slice(0,200));
+      alert('✅ '+pid+' OK ('+d.elapsed+'s)\n\n'+(d.response||'').slice(0,200));
     } else {
-      const err = (d.error||'').toLowerCase();
-      if(err.includes('credit') || err.includes('balance') || err.includes('billing')){ _providerStatus[pid] = 'nobill'; saveProviderStatus(); }
+      const st = d.status || '';
+      if(st === 'nobill'){ _providerStatus[pid] = 'nobill'; saveProviderStatus(); }
       else { _providerStatus[pid] = 'nokey'; saveProviderStatus(); }
-      alert('❌ '+pid+': '+d.error.slice(0,200));
+      alert('❌ '+pid+': '+(d.error||'').slice(0,200));
     }
+  }).catch(()=>alert('❌ Server error'));
+}
+
 function checkAllProviders(){
   const btn = document.getElementById('checkAllBtn');
   if(!btn) return;
   btn.textContent = '⟳ Testing...'; btn.disabled = true;
-  fetch('/api/check-all', {method:'POST'})
+  fetch('/api/providers/check-all', {method:'POST'})
     .then(r=>r.json())
     .then(d => {
       const results = d.results || {};
       for(const [pid, r] of Object.entries(results)){
         if(r.ok) _providerStatus[pid] = 'ok';
-        else if(r.nobill) _providerStatus[pid] = 'nobill';
+        else if(r.status === 'nobill') _providerStatus[pid] = 'nobill';
         else _providerStatus[pid] = 'nokey';
       }
       saveProviderStatus();
@@ -301,10 +304,7 @@ function checkAllProviders(){
 
 // ─── INIT ───
 renderProviders();
-// Auto-test all providers on page load (after 1s delay to let UI render)
 setTimeout(checkAllProviders, 1000);
-  }).catch(()=>alert('❌ Server error'));
-}
 
 function clearKey(pid){
   const key = getKey(pid);
