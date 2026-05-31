@@ -47,11 +47,6 @@ header{display:flex;justify-content:space-between;align-items:center;padding:10p
 .agent-list{flex:1;overflow-y:auto;padding:6px}
 .agent-list::-webkit-scrollbar{width:3px}
 .agent-list::-webkit-scrollbar-thumb{background:var(--text3);border-radius:3px}
-/* Global muted scrollbars for log and chat */
-#logBody::-webkit-scrollbar,
-#chatBody::-webkit-scrollbar{width:3px}
-#logBody::-webkit-scrollbar-thumb,
-#chatBody::-webkit-scrollbar-thumb{background:rgba(85,85,112,0.3);border-radius:3px}
 .agent-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;transition:all 0.15s;user-select:none;border:1px solid transparent;margin-bottom:2px}
 .agent-item:hover{background:var(--card);border-color:var(--card-border)}
 .agent-item.on{border-color:var(--card-border-hover)}
