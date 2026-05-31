@@ -991,8 +991,6 @@ function startPipeline(){
   fetch('/api/start', {method:'POST'}).then(r=>r.json()).then(d=>{
     if(d.ok){
       showMsg(t('pipelineStarted'));
-      document.getElementById('startBtn').disabled = true;
-      document.getElementById('startBtn').textContent = t('running');
     } else showMsg(t('noTask'));
   }).catch(()=>showMsg(t('serverOffline')));
 }
@@ -1313,6 +1311,7 @@ function checkServer(){
     startBtn.disabled = !startReady;
     startBtn.style.background = startReady ? 'linear-gradient(135deg,#00b894,#00cec9)' : '';
     startBtn.style.color = startReady ? '#fff' : '';
+    startBtn.textContent = s.status === 'running' ? t('running') : s.status === 'waiting' ? t('start') : t('start');
 
     // Update pipeline viz
     const agentNames = s.progress ? Object.keys(s.progress) : [];
